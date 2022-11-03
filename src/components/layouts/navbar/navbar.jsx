@@ -145,11 +145,11 @@ export default function HeaderHome() {
               </MenuItem>
               <MenuItem onClick={handleCloseNavMenu}>
                 <Link
-                  to={`/categories`}
+                  to={`/room`}
                   style={{ textDecoration: 'none', color: 'black' }}
                 >
                   <Button sx={{ color: 'black', textDecoration: 'none' }}>
-                    Rooms
+                    Dorm & Rooms
                   </Button>
                 </Link>
               </MenuItem>
