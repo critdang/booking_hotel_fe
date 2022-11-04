@@ -192,7 +192,7 @@ export default function HeaderHome() {
               {/* </MenuItem> */}
               <MenuItem onClick={handleCloseNavMenu}>
                 <Link
-                  to="/https://www.facebook.com/Crit1008/"
+                  href="/https://www.facebook.com/Crit1008/"
                   style={{ textDecoration: 'none', paddingLeft: '30px' }}
                 >
                   <FaFacebookF />
@@ -203,22 +203,24 @@ export default function HeaderHome() {
           {/* END - MENU on responsive */}
 
           {/* START - LOGO on responsive */}
-          <Typography
-            variant="h4"
-            noWrap
-            component="a"
-            href=""
-            sx={{
-              display: { xs: 'flex', md: 'none' },
-              fontFamily: 'roboto',
-              fontWeight: 600,
-              letterSpacing: '.2rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            CASA 3
-          </Typography>
+          <Link to="/" style={{ textDecoration: 'none', color: 'black' }}>
+            <Typography
+              variant="h3"
+              noWrap
+              component="a"
+              sx={{
+                mr: 2,
+                display: { xs: 'none', md: 'flex' },
+                fontFamily: 'roboto',
+                fontWeight: 500,
+                letterSpacing: '.3rem',
+                color: 'inherit',
+                textDecoration: 'none',
+              }}
+            >
+              CASA 3
+            </Typography>
+          </Link>
           {/* END - LOGO on responsive */}
 
           {/* START - MENU on laptop */}
