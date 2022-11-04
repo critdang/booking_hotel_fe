@@ -1,7 +1,8 @@
 import * as React from 'react';
 import Typography from '@mui/material/Typography';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
-import Link from '@mui/material/Link';
+import { Link } from 'react-router-dom';
+
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Container } from '@mui/system';
 import { Box, CssBaseline } from '@mui/material';
@@ -22,10 +23,15 @@ export default function AboutBreadcumb() {
           <Container maxWidth="lg">
             <div role="presentation">
               <Breadcrumbs aria-label="breadcrumb">
-                <Link underline="hover" color="inherit" href="/">
+                <Link
+                  underline="hover"
+                  color="inherit"
+                  to="/"
+                  style={{ textDecoration: 'none', color: 'black' }}
+                >
                   Home
                 </Link>
-                <Typography color="text.primary">About</Typography>
+                <Typography color="text.primary">Cart</Typography>
               </Breadcrumbs>
             </div>
           </Container>

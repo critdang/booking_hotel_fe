@@ -4,14 +4,11 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import { Button, Grid } from '@mui/material';
 import * as React from 'react';
-import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import TextField from '@mui/material/TextField';
-import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import moment from 'moment';
 import { useSearchParams } from 'react-router-dom';
@@ -26,12 +23,6 @@ const initialState = {
 
 export default function SearchRoom() {
   let [searchParams, setSearchParams] = useSearchParams();
-  const term = searchParams.get('term');
-  const location = searchParams.get('location');
-  console.log(
-    '🚀 ~ file: search-room.component.jsx ~ line 30 ~ SearchRoom ~ searchParams',
-    term
-  );
 
   const [inputSearch, setInputSearch] = React.useState(initialState);
   const submitSearch = (e) => {

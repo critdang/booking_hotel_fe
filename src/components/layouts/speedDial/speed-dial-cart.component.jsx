@@ -79,7 +79,7 @@ export default function HeaderHome() {
       <Container maxWidth="xl">
         <Box sx={{ position: 'fixed', bottom: 80, right: 16, mr: 1 }}>
           <Fab>
-            <Link to="/checkout">
+            <Link to="/cart">
               <IconButton aria-label={notificationsLabel(3)}>
                 <StyledBadge badgeContent={state.count} color="success">
                   <ShoppingCartIcon

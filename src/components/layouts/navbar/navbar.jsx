@@ -19,6 +19,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import MenuIcon from '@mui/icons-material/Menu';
 import { FaFacebookF } from 'react-icons/fa';
+import { AiOutlineInstagram } from 'react-icons/ai';
 import PersonIcon from '@mui/icons-material/Person';
 import { useCart } from '../../../context/cart/cart.provider';
 
@@ -191,36 +192,55 @@ export default function HeaderHome() {
                 </Link> */}
               {/* </MenuItem> */}
               <MenuItem onClick={handleCloseNavMenu}>
-                <Link
-                  href="/https://www.facebook.com/Crit1008/"
-                  style={{ textDecoration: 'none', paddingLeft: '30px' }}
-                >
-                  <FaFacebookF />
-                </Link>
+                <Grid container>
+                  <Grid xs={6} sm={6} md={6} item>
+                    <a
+                      href="https://www.facebook.com/Crit1008/"
+                      target="_blank"
+                      rel="noopener"
+                      style={{ textDecoration: 'none', padding: '0 25px' }}
+                    >
+                      <FaFacebookF />
+                    </a>
+                  </Grid>
+                  <Grid xs={6} sm={6} md={6} item>
+                    <a
+                      href="https://www.instagram.com/thesecretgarden/"
+                      target="_blank"
+                      rel="noopener"
+                      style={{
+                        textDecoration: 'none',
+                        padding: '0 25px',
+                      }}
+                    >
+                      <AiOutlineInstagram size="20px" />
+                    </a>
+                  </Grid>
+                </Grid>
               </MenuItem>
             </Menu>
           </Box>
           {/* END - MENU on responsive */}
 
           {/* START - LOGO on responsive */}
-          <Link to="/" style={{ textDecoration: 'none', color: 'black' }}>
-            <Typography
-              variant="h3"
-              noWrap
-              component="a"
-              sx={{
-                mr: 2,
-                display: { xs: 'none', md: 'flex' },
-                fontFamily: 'roboto',
-                fontWeight: 500,
-                letterSpacing: '.3rem',
-                color: 'inherit',
-                textDecoration: 'none',
-              }}
-            >
+          <Typography
+            variant="h4"
+            noWrap
+            component="a"
+            href=""
+            sx={{
+              display: { xs: 'flex', md: 'none' },
+              fontFamily: 'roboto',
+              fontWeight: 600,
+              letterSpacing: '.2rem',
+              color: 'inherit',
+              textDecoration: 'none',
+            }}
+          >
+            <Link to="/" style={{ textDecoration: 'none', color: 'black' }}>
               CASA 3
-            </Typography>
-          </Link>
+            </Link>
+          </Typography>
           {/* END - LOGO on responsive */}
 
           {/* START - MENU on laptop */}

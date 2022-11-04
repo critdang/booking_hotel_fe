@@ -55,10 +55,7 @@ export default function Album() {
   };
 
   const [cartInfo, setCartInfo] = React.useState({});
-  console.log(
-    '🚀 ~ file: cart.component.jsx ~ line 58 ~ Album ~ cartInfo',
-    cartInfo
-  );
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />

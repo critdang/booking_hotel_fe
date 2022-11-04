@@ -97,18 +97,22 @@ export default function Footer() {
               justifyContent: 'center',
             }}
           >
-            <Link
-              to="/https://www.facebook.com/Crit1008/"
+            <a
+              href="https://www.facebook.com/Crit1008/"
+              target="_blank"
+              rel="noopener noreferrer"
               style={{ textDecoration: 'none', paddingRight: '15px' }}
             >
               <FaFacebookF style={{ color: 'white', fontSize: '25px' }} />
-            </Link>
-            <Link
-              to="/https://www.facebook.com/Crit1008/"
+            </a>
+            <a
+              href="https://www.instagram.com/thesecretgarden/"
+              target="_blank"
+              rel="noopener noreferrer"
               style={{ textDecoration: 'none', paddingLeft: '15px' }}
             >
               <FaInstagram style={{ color: 'white', fontSize: '25px' }} />
-            </Link>
+            </a>
           </Grid>
         </Grid>
 

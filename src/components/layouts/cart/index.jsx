@@ -6,7 +6,7 @@ export default function Activities() {
   return (
     <>
       <HeaderHome />
-      {/* <CartBreadCrumb /> */}
+      <CartBreadCrumb />
       <Cart />
       <Footer />
     </>
