@@ -8,12 +8,8 @@ import Amenities from './amenities.component';
 import HostelPolicies from './hostel-policies.component';
 import HomeLocation from './home-location.component';
 import AllRoom2 from './all-room2.component';
-import { useCart } from '../../../context/cart/cart.provider';
 
 export default function HomePage() {
-  const { state } = useCart();
-  const { dispatch } = useCart();
-  const onClick = (type) => () => dispatch({ type: type });
   return (
     <>
       {/* <HeaderHome /> */}

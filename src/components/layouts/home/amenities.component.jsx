@@ -14,6 +14,7 @@ import room1 from '../../../assets/img/room1.jpg';
 import room2 from '../../../assets/img/room2.jpg';
 import room3 from '../../../assets/img/room3.jpg';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useContext } from 'react';
 
 const cards = [1, 2];
 

@@ -1,42 +1,15 @@
 import * as React from 'react';
-import {
-  AppBar,
-  Avatar,
-  Badge,
-  Button,
-  Fab,
-  Grid,
-  IconButton,
-  Menu,
-  MenuItem,
-  Toolbar,
-  Tooltip,
-} from '@mui/material';
+import { AppBar, Badge, Fab, IconButton } from '@mui/material';
 import { Container } from '@mui/system';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import styled from '@emotion/styled';
 import { Link } from 'react-router-dom';
-import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import MenuIcon from '@mui/icons-material/Menu';
-import AdbIcon from '@mui/icons-material/Adb';
-import { FaFacebookF } from 'react-icons/fa';
-import PersonIcon from '@mui/icons-material/Person';
 import { useCart } from '../../../context/cart/cart.provider';
-const pages = ['Products', 'Pricing', 'Blog'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 export default function HeaderHome() {
   // [START - useContext]
   const { state } = useCart();
   // [END - useContext]
-  const [anchorEl, setAnchorEl] = React.useState(null);
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   // style badgeContent
   const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -55,25 +28,7 @@ export default function HeaderHome() {
     }
     return `${count} notifications`;
   }
-  const open = Boolean(anchorEl);
 
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
-
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
   return (
     <AppBar position="sticky">
       <Container maxWidth="xl">

@@ -14,7 +14,7 @@ import {
 import { Container } from '@mui/system';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import styled from '@emotion/styled';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -27,6 +27,7 @@ export default function HeaderHome() {
   // [START - useContext]
   const { state } = useCart();
   // [END - useContext]
+  const navigate = useNavigate();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -73,6 +74,14 @@ export default function HeaderHome() {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
+  const logout = () => {
+    localStorage.removeItem('userInfo');
+    localStorage.removeItem('token');
+    navigate('/');
+  };
+  const auth = JSON.parse(localStorage.getItem('userInfo'));
+
   return (
     <AppBar
       position="sticky"
@@ -179,9 +188,7 @@ export default function HeaderHome() {
                   to="/location"
                   style={{ textDecoration: 'none', color: 'black' }}
                 >
-                  <Button sx={{ color: 'black', textDecoration: 'none' }}>
-                    Location
-                  </Button>
+                  <Button sx={{ color: 'black' }}>Location</Button>
                 </Link>
               </MenuItem>
               {/* <MenuItem onClick={handleCloseNavMenu}> */}
@@ -192,12 +199,20 @@ export default function HeaderHome() {
                 </Link> */}
               {/* </MenuItem> */}
               <MenuItem onClick={handleCloseNavMenu}>
+                <Link
+                  to="/login"
+                  style={{ textDecoration: 'none', color: 'black' }}
+                >
+                  <Button sx={{ color: 'black' }}>Login</Button>
+                </Link>
+              </MenuItem>
+              <MenuItem onClick={handleCloseNavMenu}>
                 <Grid container>
                   <Grid xs={6} sm={6} md={6} item>
                     <a
                       href="https://www.facebook.com/Crit1008/"
                       target="_blank"
-                      rel="noopener"
+                      rel="noopener noreferrer"
                       style={{ textDecoration: 'none', padding: '0 25px' }}
                     >
                       <FaFacebookF />
@@ -207,7 +222,7 @@ export default function HeaderHome() {
                     <a
                       href="https://www.instagram.com/thesecretgarden/"
                       target="_blank"
-                      rel="noopener"
+                      rel="noopener noreferrer"
                       style={{
                         textDecoration: 'none',
                         padding: '0 25px',
@@ -321,11 +336,29 @@ export default function HeaderHome() {
                   Location
                 </Button>
               </Link>
-              {/* <Link to="/profile">
+
+              {auth ? (
+                <Button
+                  sx={{ color: 'black', textDecoration: 'none' }}
+                  onClick={logout}
+                >
+                  Logout
+                </Button>
+              ) : (
+                <Link
+                  to="/login"
+                  style={{ textDecoration: 'none', color: 'black' }}
+                >
+                  <Button sx={{ color: 'black' }}>Login</Button>
+                </Link>
+              )}
+              {auth && (
+                <Link to="/profile">
                   <Button underline="none" sx={{ color: 'black' }}>
                     <PersonIcon></PersonIcon>
                   </Button>
-                </Link> */}
+                </Link>
+              )}
             </div>
             <Link to="/cart">
               <IconButton aria-label={notificationsLabel(4)}>
