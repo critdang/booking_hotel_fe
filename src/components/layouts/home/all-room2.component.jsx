@@ -14,6 +14,7 @@ import room1 from '../../../assets/img/room1.jpg';
 import room2 from '../../../assets/img/room2.jpg';
 import room3 from '../../../assets/img/room3.jpg';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { Link } from 'react-router-dom';
 
 const cards = [1];
 const theme = createTheme();
@@ -80,7 +81,12 @@ export default function AllRoom2() {
               spacing={2}
               justifyContent="center"
             >
-              <Button variant="outlined">Go to Dorm & Rooms</Button>
+              <Link
+                to="/room"
+                style={{ textDecoration: 'none', color: 'black' }}
+              >
+                <Button variant="outlined">Go to Dorm & Rooms</Button>
+              </Link>
             </Stack>
           </Container>
           <Container sx={{ py: 3 }} maxWidth="lg">

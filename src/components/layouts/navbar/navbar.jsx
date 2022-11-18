@@ -22,6 +22,7 @@ import { FaFacebookF } from 'react-icons/fa';
 import { AiOutlineInstagram } from 'react-icons/ai';
 import PersonIcon from '@mui/icons-material/Person';
 import { useCart } from '../../../context/cart/cart.provider';
+import { useAuth } from '../../../context/auth/auth';
 
 export default function HeaderHome() {
   // [START - useContext]
@@ -78,9 +79,9 @@ export default function HeaderHome() {
   const logout = () => {
     localStorage.removeItem('userInfo');
     localStorage.removeItem('token');
-    navigate('/');
+    window.location.reload();
   };
-  const auth = JSON.parse(localStorage.getItem('userInfo'));
+  const { signed } = useAuth();
 
   return (
     <AppBar
@@ -337,7 +338,7 @@ export default function HeaderHome() {
                 </Button>
               </Link>
 
-              {auth ? (
+              {signed ? (
                 <Button
                   sx={{ color: 'black', textDecoration: 'none' }}
                   onClick={logout}
@@ -352,7 +353,7 @@ export default function HeaderHome() {
                   <Button sx={{ color: 'black' }}>Login</Button>
                 </Link>
               )}
-              {auth && (
+              {signed && (
                 <Link to="/profile">
                   <Button underline="none" sx={{ color: 'black' }}>
                     <PersonIcon></PersonIcon>
@@ -360,7 +361,7 @@ export default function HeaderHome() {
                 </Link>
               )}
             </div>
-            <Link to="/cart">
+            {/* <Link to="/cart">
               <IconButton aria-label={notificationsLabel(4)}>
                 <StyledBadge badgeContent={state.count} color="success">
                   <ShoppingCartIcon
@@ -375,7 +376,7 @@ export default function HeaderHome() {
                   </ShoppingCartIcon>
                 </StyledBadge>
               </IconButton>
-            </Link>
+            </Link> */}
             {/* <Link to="/profile">
               <PersonIcon
                 cursor="pointer"

@@ -3,7 +3,6 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -16,16 +15,13 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import axios from 'axios';
 import { toastAlertFail, toastAlertSuccess } from '../../../utils/helperFn';
-import { useNavigate } from 'react-router-dom';
 import * as API from '../../../constants/api';
 import {
   Card,
-  CardActions,
   CardContent,
   CardMedia,
   FormControl,
   FormControlLabel,
-  FormLabel,
   IconButton,
   Input,
   InputAdornment,
@@ -45,6 +41,8 @@ export default function RequestReset() {
 
   const dataUser = JSON.parse(localStorage.getItem('userInfo'));
   const [userInfo, setUserInfo] = useState(dataUser);
+  const [selectedFile, setSelectedFile] = useState();
+  const [confirmPassword, setConfirmPassword] = React.useState();
 
   // useEffect(() => {
   //   console.log(111111111);
@@ -87,10 +85,9 @@ export default function RequestReset() {
     resolver: yupResolver(schema),
   });
   const submitProfile = (data) => {
-    console.log(
-      '🚀 ~ file: profile-body.component.jsx ~ line 99 ~ submitProfile ~ TOKEN',
-      TOKEN
-    );
+    if (confirmPassword.confirmPassword !== data.password) {
+      return toastAlertFail('Passwords must match');
+    }
     axios({
       method: 'put',
       url: API.EDIT_PROFILE,
@@ -98,10 +95,6 @@ export default function RequestReset() {
       headers: { authorization: `Bearer ${TOKEN}` },
     })
       .then((res) => {
-        console.log(
-          '🚀 ~ file: profile-body.component.jsx ~ line 98 ~ .then ~ res',
-          res
-        );
         if (res.data.success) {
           toastAlertSuccess(res.data.message);
         }
@@ -116,7 +109,36 @@ export default function RequestReset() {
         }
       });
   };
-
+  const uploadAvatar = async () => {
+    const formData = new FormData();
+    formData.append('avatar', selectedFile);
+    // const config = {
+    //   headers: {
+    //     'content-type': 'multipart/form-data',
+    //   },
+    // };
+    // const result = await axios.put(API.UPLOAD_AVATAR, formData, config);
+    // console.log(
+    //   '🚀 ~ file: profile-body.component.jsx ~ line 126 ~ uploadAvatar ~ result',
+    //   result
+    // );
+    await axios({
+      method: 'put',
+      url: API.UPLOAD_AVATAR,
+      data: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+      .then((res) => {
+        console.log(
+          '🚀 ~ file: profile-body.component.jsx ~ line 126 ~ uploadAvatar ~ res',
+          res
+        );
+        return toastAlertSuccess(res.data.message);
+      })
+      .catch((error) => console.log(error));
+  };
   return (
     <form onSubmit={handleSubmit(submitProfile)}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -169,19 +191,25 @@ export default function RequestReset() {
                             {/* <CardActions>
                             <Input type="file" sx={{ focused: 'true' }}></Input>
                           </CardActions> */}
-                            <label htmlFor="upload-photo">
-                              <input
-                                style={{ display: 'none' }}
-                                id="upload-photo"
-                                name="upload-photo"
-                                type="file"
-                              />
-                              <Box textAlign="center">
-                                <Button variant="outlined" size="small">
-                                  Change profile photo
-                                </Button>{' '}
-                              </Box>
-                            </label>
+                            <Box textAlign="center">
+                              <Button
+                                variant="contained"
+                                component="label"
+                                onChange={uploadAvatar}
+                              >
+                                Upload File
+                                <input
+                                  type="file"
+                                  hidden
+                                  name="avatar"
+                                  id="avatar"
+                                  className="form-control"
+                                  onChange={(e) =>
+                                    setSelectedFile(e.target.files[0])
+                                  }
+                                />
+                              </Button>
+                            </Box>
                           </CardContent>
                         </Card>
                       </Grid>
@@ -319,41 +347,52 @@ export default function RequestReset() {
                         <InputLabel htmlFor="standard-adornment-password">
                           Password
                         </InputLabel>
-                        <Input
-                          id="oldPassword"
-                          type={values.showPassword ? 'text' : 'password'}
-                          value={values.oldPassword}
-                          name="oldPassword"
-                          fullWidth
-                          variant="standard"
-                          endAdornment={
-                            <InputAdornment position="end">
-                              <IconButton
-                                aria-label="toggle password visibility"
-                                onClick={handleClickShowPassword}
-                                onMouseDown={handleMouseDownPassword}
-                              >
-                                {values.showPassword ? (
-                                  <Visibility />
-                                ) : (
-                                  <VisibilityOff />
-                                )}
-                              </IconButton>
-                            </InputAdornment>
-                          }
+                        <Controller
+                          control={control}
+                          name="password"
+                          render={({ field }) => (
+                            <Input
+                              id="password"
+                              type={values.showPassword ? 'text' : 'password'}
+                              name="password"
+                              fullWidth
+                              variant="standard"
+                              {...field}
+                              endAdornment={
+                                <InputAdornment position="end">
+                                  <IconButton
+                                    aria-label="toggle password visibility"
+                                    onClick={handleClickShowPassword}
+                                    onMouseDown={handleMouseDownPassword}
+                                  >
+                                    {values.showPassword ? (
+                                      <Visibility />
+                                    ) : (
+                                      <VisibilityOff />
+                                    )}
+                                  </IconButton>
+                                </InputAdornment>
+                              }
+                            />
+                          )}
                         />
                       </Grid>
                       <Grid item xs={12} sm={6}>
                         <InputLabel htmlFor="standard-adornment-password">
-                          Password
+                          Confirm Password
                         </InputLabel>
                         <Input
-                          id="newPassword"
-                          name="newPassword"
+                          id="confirmPassword"
+                          name="confirmPassword"
                           type={values.showPassword ? 'text' : 'password'}
                           fullWidth
                           variant="standard"
-                          value={values.newPassword}
+                          onChange={(e) =>
+                            setConfirmPassword({
+                              ...confirmPassword,
+                              [e.target.name]: e.target.value,
+                            })
+                          }
                           endAdornment={
                             <InputAdornment position="end">
                               <IconButton
@@ -372,7 +411,9 @@ export default function RequestReset() {
                         />
                       </Grid>
                       <Grid item xs={12} sm={12}>
-                        <Button variant="outlined">Change Password</Button>
+                        <Button variant="outlined" type="submit">
+                          Change Password
+                        </Button>
                         <ToastContainer />
                       </Grid>
                     </Grid>

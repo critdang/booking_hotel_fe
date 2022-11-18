@@ -22,14 +22,14 @@ import axios from 'axios';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as API from '../../../constants/api';
-
+import { useAuth } from '../../../context/auth/auth';
 const theme = createTheme();
 
 export default function LoginBody() {
   const navigate = useNavigate();
 
   const [err, setErr] = useState(false);
-
+  const { Login } = useAuth();
   const schema = yup
     .object()
     .shape({
@@ -50,28 +50,10 @@ export default function LoginBody() {
     resolver: yupResolver(schema),
   });
   const submitLogin = (data) => {
-    axios
-      .post(API.LOGIN, data)
-      .then((res) => {
-        if (res.data.success) {
-          localStorage.setItem('token', res.data.message.accessToken);
-          localStorage.setItem(
-            'userInfo',
-            JSON.stringify(res.data.message.userInfo)
-          );
-          navigate('/');
-        }
-      })
-      .catch((error) => {
-        console.log(
-          '🚀 ~ file: login-body.component.jsx ~ line 68 ~ submitLogin ~ error',
-          error
-        );
-        if (error) {
-          setErr(true);
-          return toastAlertFail('Login failed.');
-        }
-      });
+    const result = Login(data);
+    if (result) {
+      navigate('/');
+    }
   };
 
   return (

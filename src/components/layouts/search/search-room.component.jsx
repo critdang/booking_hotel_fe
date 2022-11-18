@@ -12,6 +12,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import moment from 'moment';
 import { useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const theme = createTheme();
 const initialState = {
@@ -22,11 +23,13 @@ const initialState = {
 };
 
 export default function SearchRoom() {
+  const navigate = useNavigate();
   let [searchParams, setSearchParams] = useSearchParams();
 
   const [inputSearch, setInputSearch] = React.useState(initialState);
   const submitSearch = (e) => {
     setSearchParams(inputSearch);
+    navigate('/book/reservation/rooms');
   };
   return (
     <>
@@ -128,6 +131,21 @@ export default function SearchRoom() {
                     <MenuItem value={'1 Adult 2 Child'}>
                       2 Adult 1 Child
                     </MenuItem>
+                  </Select>
+                  <Select
+                    value={inputSearch.kid}
+                    name="kid"
+                    onChange={(e) => {
+                      setInputSearch({
+                        ...inputSearch,
+                        [e.target.name]: e.target.value,
+                      });
+                    }}
+                    style={{ marginRight: '20px' }}
+                  >
+                    <MenuItem value={'1 kid'}>1 kid</MenuItem>
+                    <MenuItem value={'2 kids'}>2 kids</MenuItem>
+                    <MenuItem value={'3 kids'}>3 kids</MenuItem>
                   </Select>
                 </Grid>
 

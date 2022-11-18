@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Activities from './index';
+import { Link } from 'react-router-dom';
 
 const cards = [1];
 
@@ -42,7 +43,12 @@ export default function HomeLocation() {
               spacing={2}
               justifyContent="center"
             >
-              <Button variant="outlined">Read more</Button>
+              <Link
+                to="/location"
+                style={{ textDecoration: 'none', color: 'black' }}
+              >
+                <Button variant="outlined">Read more</Button>
+              </Link>
             </Stack>
           </Container>
         </Box>
