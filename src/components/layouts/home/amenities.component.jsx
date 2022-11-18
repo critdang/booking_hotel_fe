@@ -14,6 +14,8 @@ import room1 from '../../../assets/img/room1.jpg';
 import room2 from '../../../assets/img/room2.jpg';
 import room3 from '../../../assets/img/room3.jpg';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useContext } from 'react';
+import { Link } from 'react-router-dom';
 
 const cards = [1, 2];
 
@@ -124,7 +126,12 @@ export default function Amenities() {
             spacing={2}
             justifyContent="center"
           >
-            <Button variant="outlined">All Amenities</Button>
+            <Link
+              to="/about"
+              style={{ textDecoration: 'none', color: 'black' }}
+            >
+              <Button variant="outlined">All Amenities</Button>
+            </Link>
           </Stack>
         </Container>
       </main>
