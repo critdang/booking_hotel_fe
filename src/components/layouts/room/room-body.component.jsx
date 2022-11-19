@@ -78,6 +78,11 @@ export default function RoomBody() {
 
   // get all categories
   useEffect(() => {
+    console.log(
+      '🚀 ~ file: room-body.component.jsx ~ line 83 ~ useEffect ~ API.GET_CATEGORY',
+      API.GET_CATEGORY
+    );
+    console.log(process.env.REACT_APP_BASE_URL);
     axios
       .get(API.GET_CATEGORY)
       .then((res) => {
