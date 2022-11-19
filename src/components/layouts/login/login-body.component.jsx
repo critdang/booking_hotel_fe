@@ -49,11 +49,9 @@ export default function LoginBody() {
   } = useForm({
     resolver: yupResolver(schema),
   });
-  const submitLogin = (data) => {
-    const result = Login(data);
-    if (result) {
-      navigate('/');
-    }
+  const submitLogin = async (data) => {
+    const result = await Login(data);
+    navigate('/');
   };
 
   return (
@@ -177,7 +175,21 @@ export default function LoginBody() {
                       variant="body2"
                       style={{ textDecoration: 'none' }}
                     >
-                      Forgot password?
+                      <Button
+                        sx={{
+                          border: 'none',
+                          backgroundColor: 'white',
+                          textDecoration: 'underline',
+                          textTransform: 'none',
+                          p: 0,
+                        }}
+                        onClick={() => {
+                          window.scrollTo(0, 0);
+                          navigate('/book/reservation/rooms');
+                        }}
+                      >
+                        Forgot password?
+                      </Button>
                     </Link>
                   </Grid>
                   <Grid item>
@@ -186,7 +198,21 @@ export default function LoginBody() {
                       variant="body2"
                       style={{ textDecoration: 'none' }}
                     >
-                      {"Don't have an account? Sign Up"}
+                      <Button
+                        sx={{
+                          border: 'none',
+                          backgroundColor: 'white',
+                          textDecoration: 'underline',
+                          textTransform: 'none',
+                          p: 0,
+                        }}
+                        onClick={() => {
+                          window.scrollTo(0, 0);
+                          navigate('/book/reservation/rooms');
+                        }}
+                      >
+                        Don't have an account? Sign Up
+                      </Button>
                     </Link>
                   </Grid>
                 </Grid>

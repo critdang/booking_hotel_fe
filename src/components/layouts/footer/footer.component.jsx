@@ -6,7 +6,7 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import { Link } from 'react-router-dom';
-import { Button } from '@mui/material';
+import { Button, Tooltip } from '@mui/material';
 import { FaFacebookF, FaInstagram } from 'react-icons/fa';
 
 const theme = createTheme();
@@ -97,22 +97,26 @@ export default function Footer() {
               justifyContent: 'center',
             }}
           >
-            <a
-              href="https://www.facebook.com/Crit1008/"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ textDecoration: 'none', paddingRight: '15px' }}
-            >
-              <FaFacebookF style={{ color: 'white', fontSize: '25px' }} />
-            </a>
-            <a
-              href="https://www.instagram.com/thesecretgarden/"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ textDecoration: 'none', paddingLeft: '15px' }}
-            >
-              <FaInstagram style={{ color: 'white', fontSize: '25px' }} />
-            </a>
+            <Tooltip title="Facebook">
+              <a
+                href="https://www.facebook.com/Crit1008/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ textDecoration: 'none', paddingRight: '15px' }}
+              >
+                <FaFacebookF style={{ color: 'white', fontSize: '25px' }} />
+              </a>
+            </Tooltip>
+            <Tooltip title="Instagram">
+              <a
+                href="https://www.instagram.com/thesecretgarden/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ textDecoration: 'none', paddingLeft: '15px' }}
+              >
+                <FaInstagram style={{ color: 'white', fontSize: '25px' }} />
+              </a>
+            </Tooltip>
           </Grid>
         </Grid>
 

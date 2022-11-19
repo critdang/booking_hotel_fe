@@ -346,10 +346,7 @@ export default function HeaderHome() {
                   Logout
                 </Button>
               ) : (
-                <Link
-                  to="/login"
-                  style={{ textDecoration: 'none', color: 'black' }}
-                >
+                <Link to="/login" style={{ textDecoration: 'none' }}>
                   <Button sx={{ color: 'black' }}>Login</Button>
                 </Link>
               )}

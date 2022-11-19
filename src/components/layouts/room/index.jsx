@@ -12,7 +12,7 @@ export default function Room() {
       <SearchRoom />
       <RoomBody />
       <Footer />
-      <SpeedDialCart />
+      {/* <SpeedDialCart /> */}
     </>
   );
 }

@@ -49,7 +49,7 @@ const styleModal = {
   transform: 'translate(-50%, -50%)',
   width: 1200,
   bgcolor: 'white',
-  border: '2px solid #000',
+  borderRadius: '25px',
   boxShadow: 24,
   p: 4,
 };
@@ -276,7 +276,7 @@ export default function RoomBody() {
                             >
                               <Box sx={styleModal}>
                                 <Grid container>
-                                  <Grid item xs={12}>
+                                  <Grid item xs={12} sm={12} md={12}>
                                     <IconButton
                                       aria-label="close"
                                       onClick={handleCloseModal}
@@ -291,7 +291,13 @@ export default function RoomBody() {
                                       <CloseIcon />
                                     </IconButton>
                                   </Grid>
-                                  <Grid item xs={7} align="center">
+                                  <Grid
+                                    item
+                                    xs={12}
+                                    sm={6}
+                                    md={6}
+                                    align="center"
+                                  >
                                     <Typography
                                       variant="h6"
                                       sx={{
@@ -350,8 +356,9 @@ export default function RoomBody() {
                                   </Grid>
                                   <Grid
                                     item
-                                    xs={5}
-                                    align="left"
+                                    xs={12}
+                                    sm={6}
+                                    md={6}
                                     sx={{ borderLeft: 0.5 }}
                                   >
                                     <Container>

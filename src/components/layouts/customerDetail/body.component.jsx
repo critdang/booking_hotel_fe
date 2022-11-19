@@ -9,6 +9,9 @@ import {
   TextField,
   FormControl,
   FormLabel,
+  Stepper,
+  Step,
+  StepLabel,
 } from '@mui/material';
 import * as React from 'react';
 import moment from 'moment';
@@ -27,8 +30,10 @@ const initialState = {
   room: '1 Room',
   numberOfGuests: '1 Adult',
 };
+const steps = ['Choose room', 'Fill information', 'Payment and Overall order'];
 
 export default function Body() {
+  const [activeStep, setActiveStep] = React.useState(1);
   const navigate = useNavigate();
 
   let [searchParams, setSearchParams] = useSearchParams();
@@ -73,6 +78,25 @@ export default function Body() {
               <Grid container>
                 <Grid item xs={12} sm={12} md={8}>
                   <Container maxWidth="xl">
+                    <Box
+                      sx={{
+                        width: '100%',
+                        my: 2,
+                        display: { xs: 'block', md: 'none', lg: 'none' },
+                      }}
+                    >
+                      <Stepper activeStep={activeStep}>
+                        {steps.map((label, index) => {
+                          const stepProps = {};
+                          const labelProps = {};
+                          return (
+                            <Step key={label} {...stepProps}>
+                              <StepLabel {...labelProps}>{label}</StepLabel>
+                            </Step>
+                          );
+                        })}
+                      </Stepper>
+                    </Box>
                     <Typography
                       variant="h4"
                       fontWeight="bold"
@@ -337,6 +361,46 @@ export default function Body() {
                     >
                       50 Bach Dang St, Hai Chau District 550000 Da Nang, Vietnam
                     </Typography>
+                  </Box>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      mt: 2,
+                      display: { xs: 'none', md: 'block', lg: 'block' },
+                    }}
+                  >
+                    <Stepper activeStep={activeStep} orientation="vertical">
+                      {steps.map((label, index) => {
+                        const stepProps = {};
+                        const labelProps = {};
+                        return (
+                          <Step key={label} {...stepProps}>
+                            <StepLabel {...labelProps}>
+                              {label}
+                              {label == 'Choose room' && (
+                                <div>
+                                  <Button
+                                    sx={{
+                                      border: 'none',
+                                      backgroundColor: 'white',
+                                      textDecoration: 'underline',
+                                      textTransform: 'none',
+                                      p: 0,
+                                    }}
+                                    onClick={() => {
+                                      window.scrollTo(0, 0);
+                                      navigate('/book/reservation/rooms');
+                                    }}
+                                  >
+                                    Edit room
+                                  </Button>
+                                </div>
+                              )}
+                            </StepLabel>
+                          </Step>
+                        );
+                      })}
+                    </Stepper>
                   </Box>
                 </Grid>
               </Grid>

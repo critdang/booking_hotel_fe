@@ -18,11 +18,10 @@ export default function HomePage() {
       <HotSalesBanner />
       <Amenities />
       <HostelPolicies />
-      {/* <AllRoom /> */}
       <AllRoom2 />
       <HomeLocation />
       <Footer />
-      <SpeedDialCart />
+      {/* <SpeedDialCart /> */}
       {/* <ScrollTop /> */}
     </>
   );
