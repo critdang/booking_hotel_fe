@@ -2,10 +2,6 @@
   "name": "booking_hostel",
   "version": "0.1.0",
   "private": true,
-  "engines": {
-    "node": ">=16.x.x",
-    "npm": ">=9.0.0"
-  },
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
