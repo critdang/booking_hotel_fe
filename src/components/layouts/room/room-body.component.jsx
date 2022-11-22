@@ -30,7 +30,8 @@ import { useCart } from '../../../context/cart/cart.provider';
 import axios from 'axios';
 import * as API from '../../../constants/api';
 import { toastAlertFail, toastAlertSuccess } from '../../../utils/helperFn';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import moment from 'moment';
 
 const imageSources = [
   'https://media-cdn.tripadvisor.com/media/photo-s/17/61/79/7f/pub-area.jpg',
@@ -63,7 +64,12 @@ function RoomDescription(data) {
 }
 const raw = `Top premium floors, exclusive Executive Lounge access, ocean and Han River views \n Located through 25th - 27th floor, this executive room offers spectacular ocean and river views.\n Comfortably appointed with the Vietnamese-inspired décor, the guest room features a king-sized bed.`;
 const descriptions = raw.split('\n');
-
+const initialState = {
+  From: moment(new Date()).format('MM/DD/YYYY'),
+  To: moment(new Date()).add(1, 'days').format('MM/DD/YYYY'),
+  room: '1 Room',
+  numberOfGuests: '1 Adult',
+};
 export default function RoomBody() {
   const navigate = useNavigate();
 
@@ -75,6 +81,11 @@ export default function RoomBody() {
   const [rooms, setRooms] = useState([]);
   const [categoryId, setCategoryId] = useState(1); //chua dung tai sao k dc de default value null
   const [value, setValue] = React.useState();
+  let [searchParams, setSearchParams] = useSearchParams();
+  console.log(
+    '🚀 ~ file: room-body.component.jsx ~ line 85 ~ RoomBody ~ searchParams',
+    searchParams
+  );
 
   // get all categories
   useEffect(() => {
@@ -82,7 +93,6 @@ export default function RoomBody() {
       '🚀 ~ file: room-body.component.jsx ~ line 83 ~ useEffect ~ API.GET_CATEGORY',
       API.GET_CATEGORY
     );
-    console.log(process.env.REACT_APP_BASE_URL);
     axios
       .get(API.GET_CATEGORY)
       .then((res) => {
@@ -134,8 +144,22 @@ export default function RoomBody() {
   };
 
   // const onClick = (type) => () => dispatch({ type: type });
-  const handleBook = (id) => {
-    localStorage.setItem('roomId', id);
+  const handleBook = (id, price, roomName) => {
+    if (Object.getOwnPropertyNames(searchParams).length === 0) {
+      const rooms = [
+        {
+          From: moment(new Date()).format('MM/DD/YYYY'),
+          To: moment(new Date()).add(1, 'days').format('MM/DD/YYYY'),
+          room: 1,
+          adult: 1,
+          kids: 0,
+          roomId: id,
+          price,
+          roomName,
+        },
+      ];
+      localStorage.setItem('rooms', JSON.stringify(rooms));
+    }
     window.scrollTo(0, 0);
     navigate('/book/reservation');
   };
@@ -225,13 +249,33 @@ export default function RoomBody() {
                             alt="random"
                           />
                           <CardContent sx={{ flexGrow: 1 }}>
+                            <Box
+                              display="flex"
+                              alignItems="center"
+                              justifyContent="space-between"
+                            >
+                              <Typography
+                                gutterBottom
+                                variant="h6"
+                                fontWeight="bold"
+                              >
+                                {room.name}
+                              </Typography>
+                              <Typography
+                                gutterBottom
+                                variant="h6"
+                                sx={{ color: '#FF5E1F' }}
+                                fontWeight="bold"
+                              >
+                                {room.price}
+                              </Typography>
+                            </Box>
                             <Typography
                               gutterBottom
-                              variant="h6"
-                              component="h2"
-                              textAlign="center"
+                              variant="body2"
+                              textAlign="right"
                             >
-                              {room.name}
+                              / room / night(s)
                             </Typography>
                           </CardContent>
                           <CardActions
@@ -246,9 +290,11 @@ export default function RoomBody() {
                               size="small"
                               sx={{ width: 200 }}
                               // onClick={onClick('increase')}
-                              onClick={() => handleBook(room.id)}
+                              onClick={() =>
+                                handleBook(room.id, room.price, room.name)
+                              }
                             >
-                              Book Now
+                              Book Now !
                             </Button>
                           </CardActions>
 

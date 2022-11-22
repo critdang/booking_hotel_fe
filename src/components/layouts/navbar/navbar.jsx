@@ -30,13 +30,14 @@ export default function HeaderHome() {
   // [END - useContext]
   const navigate = useNavigate();
 
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorElMenu, setAnchorElMenu] = React.useState(null);
+  const openMenu = Boolean(anchorElMenu);
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+  const handleClickMenu = (event) => {
+    setAnchorElMenu(event.currentTarget);
   };
-  const handleClose = () => {
-    setAnchorEl(null);
+  const handleCloseMenu = () => {
+    setAnchorElMenu(null);
   };
 
   // style badgeContent
@@ -56,6 +57,13 @@ export default function HeaderHome() {
     }
     return `${count} notifications`;
   }
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   const open = Boolean(anchorEl);
 
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -351,11 +359,59 @@ export default function HeaderHome() {
                 </Link>
               )}
               {signed && (
-                <Link to="/profile">
-                  <Button underline="none" sx={{ color: 'black' }}>
-                    <PersonIcon></PersonIcon>
+                <>
+                  <Button
+                    id="basic-button"
+                    aria-controls={openMenu ? 'basic-menu' : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={openMenu ? 'true' : undefined}
+                    onClick={handleClickMenu}
+                    sx={{
+                      color: 'black',
+                      '&:hover': {
+                        opacity: '50%',
+                      },
+                    }}
+                  >
+                    <Avatar
+                      alt="avatar"
+                      src="https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png"
+                      sx={{ width: 30, height: 30 }}
+                    />
                   </Button>
-                </Link>
+                  <Menu
+                    id="basic-menu"
+                    anchorEl={anchorElMenu}
+                    open={openMenu}
+                    onClose={handleCloseMenu}
+                    MenuListProps={{
+                      'aria-labelledby': 'basic-button',
+                    }}
+                  >
+                    <Link
+                      to="/profile"
+                      style={{ textDecoration: 'none', color: 'black' }}
+                    >
+                      <MenuItem
+                        onClick={handleCloseMenu}
+                        sx={{ color: 'black' }}
+                      >
+                        Profile
+                      </MenuItem>
+                    </Link>
+                    <Link
+                      to="/orders"
+                      style={{ textDecoration: 'none', color: 'black' }}
+                    >
+                      <MenuItem
+                        onClick={handleCloseMenu}
+                        sx={{ color: 'black' }}
+                      >
+                        My Orders
+                      </MenuItem>
+                    </Link>
+                  </Menu>
+                </>
               )}
             </div>
             {/* <Link to="/cart">

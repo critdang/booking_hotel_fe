@@ -12,25 +12,23 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions,
   IconButton,
-  CardActionArea,
   CardContent,
   CardMedia,
   Card,
   Divider,
-  Checkbox,
-  ButtonGroup,
   RadioGroup,
   FormControlLabel,
+  Radio,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import * as React from 'react';
 import moment from 'moment';
-import { useSearchParams } from 'react-router-dom';
+import axios from 'axios';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { Controller, useForm } from 'react-hook-form';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FaCcMastercard, FaCcVisa, FaRegCreditCard } from 'react-icons/fa';
@@ -39,7 +37,8 @@ import { styled } from '@mui/material/styles';
 import '../../../assets/css/payment/payment.css';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import Radio from '@mui/material/Radio';
+import * as API from '../../../constants/api';
+
 const initialState = {
   From: moment(new Date()).format('MM/DD/YYYY'),
   To: moment(new Date()).add(1, 'days').format('MM/DD/YYYY'),
@@ -86,6 +85,28 @@ BootstrapDialogTitle.propTypes = {
 };
 
 export default function Body(props) {
+  // [START - GET ROOMS AND ALTER DATA ]
+  const rooms = JSON.parse(localStorage.getItem('rooms'));
+  console.log('🚀 ~ file: body.component.jsx ~ line 90 ~ Body ~ rooms', rooms);
+  let totalRoomCharge = 0;
+  rooms.map((room) => (totalRoomCharge += room.price));
+  let totalTaxes = totalRoomCharge * 0.08;
+  const totalFee = {
+    totalRoomCharge: totalRoomCharge,
+    totalTaxes,
+    totalFees: 0,
+    total: totalTaxes + totalRoomCharge,
+  };
+
+  // [END - GET ROOMS AND ALTER DATA ]
+
+  // [START - GET SEARCH PARAMS]
+  const search = JSON.parse(localStorage.getItem('searchInfo'));
+  const searchInfo = {
+    From: search.From,
+    To: search.To,
+  };
+  // [END - GET SEARCH PARAMS]
   // Start config
   const [open, setOpen] = React.useState(false);
 
@@ -98,6 +119,8 @@ export default function Body(props) {
   const [openEdit, setOpenEdit] = React.useState(false);
 
   // End config
+  const navigate = useNavigate();
+
   // Start config responsive
   const theme = useTheme();
   const mobileView = useMediaQuery(theme.breakpoints.down('sm'));
@@ -111,22 +134,23 @@ export default function Body(props) {
   ];
   const [paymentMethod, setPaymentMethod] = useState('VISA');
 
-  let [searchParams, setSearchParams] = useSearchParams();
-
-  const [inputSearch, setInputSearch] = React.useState(initialState);
-  const submitSearch = (e) => {
-    setSearchParams(inputSearch);
-  };
   const [err, setErr] = useState(false);
   const schema = yup
     .object()
     .shape({
-      email: yup.string().required('Email is a required field').email(),
-      password: yup
-        .string()
-        .required('Password is a required field')
-        .max(32)
-        .min(6),
+      cardName: yup.string().required('Please provide your name'),
+      cardNumber: yup
+        .number()
+        .typeError('Card Number must be a number')
+        .required('Please provide your card number'),
+      expiryDate: yup
+        .number()
+        .typeError('Expiry Date must be a number')
+        .required('Please provide your card date'),
+      cardCVV: yup
+        .number()
+        .typeError('CVV must be a number')
+        .required('Please provide your card cvv'),
     })
     .required();
 
@@ -137,62 +161,193 @@ export default function Body(props) {
   } = useForm({
     resolver: yupResolver(schema),
   });
-  return (
-    <>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <main>
-          <Box
-            sx={{
-              bgcolor: 'background.paper',
-              pt: 2,
-              pb: 2,
-            }}
-          >
-            <Container maxWidth="xl">
-              <Grid container>
-                <Grid item xs={12} sm={12} md={8}>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      borderBottom: '4px solid rgb(0,156,222)',
-                      alignItems: 'center',
-                    }}
-                  >
-                    {mobileView ? (
-                      <Typography variant="subtitle1" fontWeight="bold">
-                        Payment and Detail Order
-                      </Typography>
-                    ) : (
-                      <Typography variant="h4" fontWeight="bold">
-                        Payment and Detail Order
-                      </Typography>
-                    )}
+  console.log(
+    '🚀 ~ file: body.component.jsx ~ line 140 ~ Body ~ errors',
+    errors
+  );
+  // fetch chosen room for total order
+  useEffect(() => {
+    axios
+      .get(`${API.GET_ROOM_BY_CATEGORY}/${rooms.id}`)
+      .then((res) => {
+        if (res.data.success) {
+        }
+      })
+      .catch((error) => {
+        console.log(
+          '🚀 ~ file: room-body.component.jsx ~ line 124 ~ handleSubmitRoom ~ error',
+          error
+        );
+      });
+  }, []);
+  const submitOrder = (data) => {
+    const payment = {
+      cardName: data.cardName,
+      cardNumber: data.cardNumber,
+      expiryDate: data.expiryDate,
+      cardCVV: data.cardCVV,
+      paymentMethod: paymentMethod,
+    };
+    const guestInfo = JSON.parse(localStorage.getItem('guestInfo'));
+    const result = {
+      payment,
+      rooms,
+      guestInfo,
+    };
+    console.log(
+      '🚀 ~ file: body.component.jsx ~ line 155 ~ submitOrder ~ result',
+      result
+    );
+    // window.scrollTo(0, 0);
+  };
 
-                    <Box>
+  return (
+    <form onSubmit={handleSubmit(submitOrder)}>
+      <>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <main>
+            <Box
+              sx={{
+                bgcolor: 'background.paper',
+                pt: 2,
+                pb: 2,
+              }}
+            >
+              <Container maxWidth="xl">
+                <Grid container>
+                  <Grid item xs={12} sm={12} md={8}>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        borderBottom: '4px solid rgb(0,156,222)',
+                        alignItems: 'center',
+                      }}
+                    >
                       {mobileView ? (
-                        <Button onClick={handleClickOpen} size="small">
-                          Review booking{' '}
-                        </Button>
+                        <Typography variant="subtitle1" fontWeight="bold">
+                          Payment and Detail Order
+                        </Typography>
                       ) : (
-                        ''
+                        <Typography variant="h4" fontWeight="bold">
+                          Payment and Detail Order
+                        </Typography>
                       )}
 
-                      <BootstrapDialog
-                        onClose={handleClose}
-                        aria-labelledby="customized-dialog-title"
-                        open={open}
-                      >
-                        <BootstrapDialogTitle
-                          id="customized-dialog-title"
+                      <Box>
+                        {mobileView ? (
+                          <Button onClick={handleClickOpen} size="small">
+                            Review booking{' '}
+                          </Button>
+                        ) : (
+                          ''
+                        )}
+
+                        <BootstrapDialog
                           onClose={handleClose}
+                          aria-labelledby="customized-dialog-title"
+                          open={open}
                         >
-                          Review Booking
-                        </BootstrapDialogTitle>
-                        <DialogContent dividers>
-                          <Grid container>
-                            <Box display="flex">
+                          <BootstrapDialogTitle
+                            id="customized-dialog-title"
+                            onClose={handleClose}
+                          >
+                            Review Booking
+                          </BootstrapDialogTitle>
+                          <DialogContent dividers>
+                            <Grid container>
+                              <Box display="flex">
+                                <Grid
+                                  item
+                                  xs={3}
+                                  sm={3}
+                                  md={3}
+                                  display="flex"
+                                  justifyContent="center"
+                                  alignItems="flex-start"
+                                >
+                                  <img src="https://ik.imagekit.io/tvlk/apr-asset/dgXfoyh24ryQLRcGq00cIdKHRmotrWLNlvG-TxlcLxGkiDwaUSggleJNPRgIHCX6/hotel/asset/67744357-4000x4000-FIT_AND_TRIM-fcee105e087e53ad560519228f0d6ac4.jpeg?_src=imagekit&tr=h-80,q-40,w-80"></img>
+                                </Grid>
+                                <Grid item xs={9} sm={9} md={9}>
+                                  <Typography variant="h6" fontWeight="bold">
+                                    The Secret Garden Hostel
+                                  </Typography>
+                                  <Grid container>
+                                    <Grid item xs={4} sm={4} md={4}>
+                                      <Typography
+                                        variant="subtitle1"
+                                        className="title_paragraph"
+                                      >
+                                        Check-in
+                                      </Typography>
+                                      <Typography
+                                        variant="subtitle2"
+                                        sx={{ fontWeight: 600 }}
+                                      >
+                                      </Typography>
+                                      <Typography
+                                        variant="subtitle2"
+                                        sx={{ fontWeight: 600 }}
+                                      >
+                                        From 14:00
+                                      </Typography>
+                                    </Grid>
+                                    <Grid item xs={4} sm={4} md={4}>
+                                      <Typography
+                                        variant="subtitle1"
+                                        className="title_paragraph"
+                                      >
+                                        Check-out
+                                      </Typography>
+                                      <Typography
+                                        variant="subtitle2"
+                                        sx={{ fontWeight: 600 }}
+                                      >
+                                        Sunday, 20 November 2022
+                                      </Typography>
+                                      <Typography
+                                        variant="subtitle2"
+                                        sx={{ fontWeight: 600 }}
+                                      >
+                                        Before 12:00
+                                      </Typography>
+                                    </Grid>
+                                    <Grid item xs={4} sm={4} md={4}>
+                                      <Typography
+                                        variant="subtitle1"
+                                        className="title_paragraph"
+                                      >
+                                        Duration of Stay
+                                      </Typography>
+                                      <Typography
+                                        variant="subtitle2"
+                                        sx={{ fontWeight: 600 }}
+                                      >
+                                        1 night
+                                      </Typography>
+                                    </Grid>
+                                  </Grid>
+
+                                  <Typography
+                                    variant="subtitle1"
+                                    className="title_paragraph"
+                                  >
+                                    Guest Name
+                                  </Typography>
+                                  <Typography
+                                    variant="subtitle2"
+                                    sx={{ fontWeight: 600 }}
+                                  >
+                                    huy huy
+                                  </Typography>
+                                  <Divider
+                                    orientation="horizontal"
+                                    flexItem
+                                    sx={{ my: 3 }}
+                                  ></Divider>
+                                </Grid>
+                              </Box>
                               <Grid
                                 item
                                 xs={3}
@@ -202,722 +357,649 @@ export default function Body(props) {
                                 justifyContent="center"
                                 alignItems="flex-start"
                               >
-                                <img src="https://ik.imagekit.io/tvlk/apr-asset/dgXfoyh24ryQLRcGq00cIdKHRmotrWLNlvG-TxlcLxGkiDwaUSggleJNPRgIHCX6/hotel/asset/67744357-4000x4000-FIT_AND_TRIM-fcee105e087e53ad560519228f0d6ac4.jpeg?_src=imagekit&tr=h-80,q-40,w-80"></img>
+                                <img src="https://ik.imagekit.io/tvlk/generic-asset/dgXfoyh24ryQLRcGq00cIdKHRmotrWLNlvG-TxlcLxGkiDwaUSggleJNPRgIHCX6/hotel/asset/67744357-4000x4000-FIT_AND_TRIM-dc1091244a30e65600427faf145e9451.jpeg?_src=imagekit&tr=h-80,q-40,w-80"></img>
                               </Grid>
                               <Grid item xs={9} sm={9} md={9}>
-                                <Typography variant="h6" fontWeight="bold">
-                                  The Secret Garden Hostel
+                                <Typography variant="h7" fontWeight="bold">
+                                  Family Room (1 Room)
                                 </Typography>
                                 <Grid container>
-                                  <Grid item xs={4} sm={4} md={4}>
+                                  <Grid item xs={6} sm={6} md={6}>
                                     <Typography
                                       variant="subtitle1"
                                       className="title_paragraph"
                                     >
-                                      Check-in
-                                    </Typography>
-                                    <Typography
-                                      variant="subtitle2"
-                                      sx={{ fontWeight: 600 }}
-                                    >
-                                      Saturday, 19 November 2022
-                                    </Typography>
-                                    <Typography
-                                      variant="subtitle2"
-                                      sx={{ fontWeight: 600 }}
-                                    >
-                                      From 14:00
+                                      No. of rooms
                                     </Typography>
                                   </Grid>
-                                  <Grid item xs={4} sm={4} md={4}>
-                                    <Typography
-                                      variant="subtitle1"
-                                      className="title_paragraph"
-                                    >
-                                      Check-out
-                                    </Typography>
+                                  <Grid item xs={6} sm={6} md={6}>
                                     <Typography
                                       variant="subtitle2"
                                       sx={{ fontWeight: 600 }}
                                     >
-                                      Sunday, 20 November 2022
-                                    </Typography>
-                                    <Typography
-                                      variant="subtitle2"
-                                      sx={{ fontWeight: 600 }}
-                                    >
-                                      Before 12:00
+                                      1 Room
                                     </Typography>
                                   </Grid>
-                                  <Grid item xs={4} sm={4} md={4}>
+                                  <Grid item xs={6} sm={6} md={6}>
                                     <Typography
                                       variant="subtitle1"
                                       className="title_paragraph"
                                     >
-                                      Duration of Stay
-                                    </Typography>
-                                    <Typography
-                                      variant="subtitle2"
-                                      sx={{ fontWeight: 600 }}
-                                    >
-                                      1 night
+                                      Special request
                                     </Typography>
                                   </Grid>
                                 </Grid>
-
-                                <Typography
-                                  variant="subtitle1"
-                                  className="title_paragraph"
-                                >
-                                  Guest Name
-                                </Typography>
-                                <Typography
-                                  variant="subtitle2"
-                                  sx={{ fontWeight: 600 }}
-                                >
-                                  huy huy
-                                </Typography>
-                                <Divider
-                                  orientation="horizontal"
-                                  flexItem
-                                  sx={{ my: 3 }}
-                                ></Divider>
                               </Grid>
-                            </Box>
+                            </Grid>
+                          </DialogContent>
+                        </BootstrapDialog>
+                      </Box>
+                    </Box>
+
+                    <Grid
+                      container
+                      sx={{
+                        borderBottom: '4px solid rgb(0,156,222)',
+                        my: 3,
+                        border: '1px solid #e0e0e0',
+                        borderRadius: '4px',
+                        p: 2,
+                      }}
+                    >
+                      <Grid item xs={6} sm={6} md={6}>
+                        <Typography
+                          variant="h5"
+                          fontWeight="bold"
+                          sx={{ color: '#104C97' }}
+                        >
+                          Total for stay
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6} sm={6} md={6} textAlign="right">
+                        <Typography
+                          variant="h5"
+                          fontWeight="bold"
+                          sx={{ color: '#104C97' }}
+                        >
+                          {totalFee.total}₫
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={12} sm={12} md={12}>
+                        <Button
+                          variant="text"
+                          size="small"
+                          sx={{ p: 0 }}
+                          onClick={() => setOpenEdit((prev) => !prev)}
+                        >
+                          <Typography
+                            variant="body2"
+                            sx={{ textDecoration: 'underline' }}
+                          >
+                            {openEdit
+                              ? 'Hide price details'
+                              : 'Show price details'}
+                          </Typography>
+                        </Button>
+                      </Grid>
+                      {/* START - DROPDOWN PRICE DETAIL */}
+                      {openEdit ? (
+                        rooms.map((room, index) => (
+                          <>
+                            <Grid item xs={12} sm={12} md={12}>
+                              <Divider flexItem sx={{ my: 1 }}></Divider>
+                              <Typography
+                                variant="body1"
+                                gutterBottom
+                                fontWeight="bold"
+                              >
+                                Room {index + 1}
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={12} sm={12} md={12}>
+                              <Typography
+                                variant="body2"
+                                className="title_paragraph"
+                              >
+                                {room.roomName}
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={6} sm={6} md={6}>
+                              <Typography
+                                variant="body2"
+                                className="title_paragraph"
+                              >
+                                {room.From} - {room.To}
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={6} sm={6} md={6} textAlign="right">
+                              <Typography
+                                variant="body2"
+                                gutterBottom
+                                className="title_paragraph"
+                              >
+                                {room.price}₫
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={12} sm={12} md={12}>
+                              <Button variant="text" size="small" sx={{ p: 0 }}>
+                                <Typography
+                                  variant="body2"
+                                  sx={{ textDecoration: 'underline' }}
+                                >
+                                  Change room
+                                </Typography>
+                              </Button>
+                            </Grid>
+                            <Grid item xs={6} sm={6} md={6}>
+                              <Typography
+                                variant="body1"
+                                gutterBottom
+                                fontWeight="bold"
+                              >
+                                Total room charge
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={6} sm={6} md={6} textAlign="right">
+                              <Typography
+                                variant="body1"
+                                gutterBottom
+                                fontWeight="bold"
+                              >
+                                {totalFee.totalRoomCharge}₫
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={12} sm={12} md={12}>
+                              <Typography
+                                variant="body2"
+                                className="title_paragraph"
+                              >
+                                Service Charge 5.00 % per room, per stay
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={6} sm={6} md={6}>
+                              <Typography
+                                variant="body1"
+                                gutterBottom
+                                fontWeight="bold"
+                              >
+                                Total fees
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={6} sm={6} md={6} textAlign="right">
+                              <Typography
+                                variant="body1"
+                                gutterBottom
+                                fontWeight="bold"
+                              >
+                                {totalFee.totalFees}₫
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={12} sm={12} md={12}>
+                              <Typography
+                                variant="body2"
+                                className="title_paragraph"
+                              >
+                                8.00 % per room, per night
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={6} sm={6} md={6}>
+                              <Typography
+                                variant="body1"
+                                gutterBottom
+                                fontWeight="bold"
+                              >
+                                Total taxes
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={6} sm={6} md={6} textAlign="right">
+                              <Typography
+                                variant="body1"
+                                gutterBottom
+                                fontWeight="bold"
+                              >
+                                {totalFee.totalTaxes}₫
+                              </Typography>
+                            </Grid>
                             <Grid
                               item
-                              xs={3}
-                              sm={3}
-                              md={3}
-                              display="flex"
-                              justifyContent="center"
-                              alignItems="flex-start"
+                              xs={12}
+                              sm={12}
+                              md={12}
+                              textAlign="right"
                             >
-                              <img src="https://ik.imagekit.io/tvlk/generic-asset/dgXfoyh24ryQLRcGq00cIdKHRmotrWLNlvG-TxlcLxGkiDwaUSggleJNPRgIHCX6/hotel/asset/67744357-4000x4000-FIT_AND_TRIM-dc1091244a30e65600427faf145e9451.jpeg?_src=imagekit&tr=h-80,q-40,w-80"></img>
-                            </Grid>
-                            <Grid item xs={9} sm={9} md={9}>
-                              <Typography variant="h7" fontWeight="bold">
-                                Family Room (1 Room)
+                              <Divider flexItem sx={{ my: 2 }}>
+                                {' '}
+                              </Divider>
+                              <Typography
+                                variant="body1"
+                                gutterBottom
+                                fontWeight="bold"
+                              >
+                                Total for stay: {totalFee.total}₫
                               </Typography>
-                              <Grid container>
-                                <Grid item xs={6} sm={6} md={6}>
-                                  <Typography
-                                    variant="subtitle1"
-                                    className="title_paragraph"
-                                  >
-                                    No. of rooms
+                            </Grid>
+                          </>
+                        ))
+                      ) : (
+                        <>
+                          <Grid item xs={6} sm={6} md={6}>
+                            <Typography variant="body2" gutterBottom>
+                              Total room charge
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6} sm={6} md={6}>
+                            <Typography
+                              variant="body2"
+                              gutterBottom
+                              textAlign="right"
+                            >
+                              {totalFee.totalRoomCharge}₫
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6} sm={6} md={6}>
+                            <Typography variant="body2" gutterBottom>
+                              Total fees
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6} sm={6} md={6}>
+                            <Typography
+                              variant="body2"
+                              gutterBottom
+                              textAlign="right"
+                            >
+                              {totalFee.totalFees}₫
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6} sm={6} md={6}>
+                            <Typography variant="body2" gutterBottom>
+                              Total taxes
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6} sm={6} md={6}>
+                            <Typography
+                              variant="body2"
+                              gutterBottom
+                              textAlign="right"
+                            >
+                              {totalFee.totalTaxes}₫
+                            </Typography>
+                          </Grid>
+                        </>
+                      )}
+                    </Grid>
+                    {/* END - DROPDOWN PRICE DETAIL */}
+                    <Typography variant="body1" gutterBottom>
+                      {' '}
+                      All fields are required unless marked optional.
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        borderBottom: '1px solid rgb(0,0,0,0.2)',
+                        pb: 1,
+                      }}
+                    >
+                      <FaRegCreditCard
+                        style={{ fontSize: '25px', marginRight: '15px' }}
+                      />
+                      <Typography variant="h6" fontWeight="bold">
+                        Payment
+                      </Typography>
+                    </Box>
+                    <FormControl>
+                      <RadioGroup
+                        aria-labelledby="demo-radio-buttons-group-label"
+                        defaultValue="VISA"
+                        name="radio-buttons-group"
+                      >
+                        <FormControlLabel
+                          value="VISA"
+                          control={<Radio />}
+                          label="VISA"
+                          onClick={() => {
+                            setPaymentMethod('VISA');
+                          }}
+                        />
+                        {/* START - PAYMENTMETHOD VISA */}
+                        {paymentMethod === 'VISA' && (
+                          <Grid container>
+                            <Grid
+                              item
+                              xs={12}
+                              sm={12}
+                              md={12}
+                              display="flex"
+                              alignItems="center"
+                              justifyContent="center"
+                              sx={{
+                                py: 2,
+                                backgroundColor: 'rgb(247, 249, 250)',
+                              }}
+                            >
+                              <Typography variant="body2" gutterBottom>
+                                We accept the following cards to guarantee your
+                                booking.
+                              </Typography>
+                              <FaCcVisa
+                                style={{ fontSize: '30px', margin: '0 10px' }}
+                              />
+                              <FaCcMastercard style={{ fontSize: '30px' }} />
+                              <Divider />
+                            </Grid>
+                            <Grid item xs={12} md={5}>
+                              <FormLabel sx={{ color: 'rgba(0,0,0,1)' }}>
+                                Credit Card Name
+                              </FormLabel>
+                              <Box>
+                                <Controller
+                                  control={control}
+                                  name="cardName"
+                                  defaultValue=""
+                                  render={({ field }) => (
+                                    <TextField
+                                      margin="normal"
+                                      name="cardName"
+                                      label="Name"
+                                      {...field}
+                                      fullWidth
+                                    />
+                                  )}
+                                />
+                                {errors.cardName && (
+                                  <Typography variant="body2" color="red">
+                                    {errors.cardName.message}
                                   </Typography>
-                                </Grid>
-                                <Grid item xs={6} sm={6} md={6}>
-                                  <Typography
-                                    variant="subtitle2"
-                                    sx={{ fontWeight: 600 }}
-                                  >
-                                    1 Room
+                                )}
+                              </Box>
+                            </Grid>
+                            <Grid item xs={12} md={1}></Grid>
+                            <Grid item xs={12} md={5}>
+                              <FormLabel sx={{ color: 'rgba(0,0,0,1)' }}>
+                                Credit Card Number
+                              </FormLabel>
+                              <Box>
+                                <Controller
+                                  control={control}
+                                  name="cardNumber"
+                                  defaultValue=""
+                                  render={({ field }) => (
+                                    <TextField
+                                      margin="normal"
+                                      name="cardNumber"
+                                      label="16 digit number"
+                                      {...field}
+                                      fullWidth
+                                    />
+                                  )}
+                                />
+                                {errors.cardNumber && (
+                                  <Typography variant="body2" color="red">
+                                    {errors.cardNumber.message}
                                   </Typography>
-                                </Grid>
-                                <Grid item xs={6} sm={6} md={6}>
-                                  <Typography
-                                    variant="subtitle1"
-                                    className="title_paragraph"
-                                  >
-                                    Special request
+                                )}
+                              </Box>
+                            </Grid>
+                            <Grid item xs={12} md={5}>
+                              <FormLabel sx={{ color: 'rgba(0,0,0,1)' }}>
+                                Expiry date*
+                              </FormLabel>
+                              <Box>
+                                <Controller
+                                  control={control}
+                                  name="expiryDate"
+                                  defaultValue=""
+                                  render={({ field }) => (
+                                    <TextField
+                                      margin="normal"
+                                      name="expiryDate"
+                                      label="MM/YY"
+                                      fullWidth
+                                      {...field}
+                                    />
+                                  )}
+                                />
+                                {errors.expiryDate && (
+                                  <Typography variant="body2" color="red">
+                                    {errors.expiryDate.message}
                                   </Typography>
-                                </Grid>
-                              </Grid>
+                                )}
+                              </Box>
+                            </Grid>
+                            <Grid item xs={12} md={1}></Grid>
+                            <Grid item xs={12} md={5}>
+                              <FormLabel sx={{ color: 'rgba(0,0,0,1)' }}>
+                                CVV
+                              </FormLabel>
+                              <Box>
+                                <Controller
+                                  control={control}
+                                  name="cardCVV"
+                                  defaultValue=""
+                                  render={({ field }) => (
+                                    <TextField
+                                      margin="normal"
+                                      name="cardCVV"
+                                      label="Last three digits on sigature strip"
+                                      fullWidth
+                                      {...field}
+                                    />
+                                  )}
+                                />
+                                {errors.cardCVV && (
+                                  <Typography variant="body2" color="red">
+                                    {errors.cardCVV.message}
+                                  </Typography>
+                                )}
+                              </Box>
                             </Grid>
                           </Grid>
-                        </DialogContent>
-                      </BootstrapDialog>
-                    </Box>
-                  </Box>
+                        )}
+                        {/* END - PAYMENTMETHOD VISA */}
 
-                  <Grid
-                    container
-                    sx={{
-                      borderBottom: '4px solid rgb(0,156,222)',
-                      my: 3,
-                      border: '1px solid #e0e0e0',
-                      borderRadius: '4px',
-                      p: 2,
-                    }}
-                  >
-                    <Grid item xs={6} sm={6} md={6}>
+                        <FormControlLabel
+                          value="stripe"
+                          control={<Radio />}
+                          label="Stripe"
+                          onClick={() => {
+                            setPaymentMethod('Stripe');
+                          }}
+                        />
+                      </RadioGroup>
+                    </FormControl>
+                    <Divider sx={{ my: 2 }} />
+                    <Box sx={{ width: '80%' }}>
                       <Typography
-                        variant="h5"
+                        variant="body1"
                         fontWeight="bold"
-                        sx={{ color: '#104C97' }}
+                        gutterBottom
                       >
-                        Total for stay
+                        Guarantee and Cancellation Policy
                       </Typography>
-                    </Grid>
-                    <Grid item xs={6} sm={6} md={6} textAlign="right">
+                      <Typography variant="body1" gutterBottom>
+                        There is a credit card required for this reservation.
+                        Free cancellation before 11:59 PM local hotel time on 16
+                        Nov 2022.
+                      </Typography>
                       <Typography
-                        variant="h5"
+                        variant="body1"
                         fontWeight="bold"
-                        sx={{ color: '#104C97' }}
+                        gutterBottom
                       >
-                        8,346,240.00₫
+                        By clicking "Book Reservation," I agree to the &nbsp;
+                        <a href="/" style={{ color: '#104C97' }}>
+                          Rules and Restrictions
+                        </a>
+                        &nbsp;
+                        <a href="/" style={{ color: '#104C97' }}>
+                          Site Usage Agreement
+                        </a>
+                        and agree that Hilton will collect, use, share and
+                        transfer my information as set out in Hilton’s Global
+                        Privacy Statement
                       </Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={12}>
-                      <Button
-                        variant="text"
-                        size="small"
-                        sx={{ p: 0 }}
-                        onClick={() => setOpenEdit((prev) => !prev)}
+                      <Typography
+                        variant="body1"
+                        fontWeight="bold"
+                        gutterBottom
                       >
+                        California consumers, click here, Opens new tab to learn
+                        about Hilton's collection and use of your personal
+                        information.
+                      </Typography>
+                      <Typography variant="body1" gutterBottom>
+                        I also agree to the &nbsp;
+                        <a href="/" style={{ color: '#104C97' }}>
+                          Hilton Honors Program Terms and Conditions.
+                        </a>
+                      </Typography>
+                    </Box>
+                    <Button
+                      type="submit"
+                      size="large"
+                      variant="contained"
+                      sx={{ mt: 3, mb: 2 }}
+                      onClick={submitOrder}
+                    >
+                      Book Reservation
+                    </Button>
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={1}></Grid>
+                  {/* START - SIDE OVERALL */}
+                  <Grid item xs={12} sm={12} md={3}>
+                    <Card>
+                      <CardMedia
+                        component="img"
+                        height="200"
+                        src="https://www.hilton.com/im/en/DADDVHI/9210432/daddv-the-sail-2.jpg?impolicy=crop&cw=5428&ch=2822&gravity=NorthWest&xposition=0&yposition=88&rw=750&rh=390"
+                        image="https://www.hilton.com/im/en/DADDVHI/9210432/daddv-the-sail-2.jpg?impolicy=crop&cw=5428&ch=2822&gravity=NorthWest&xposition=0&yposition=88&rw=750&rh=390"
+                        alt="green iguana"
+                      />
+                      <CardContent>
+                        <Typography variant="h6" fontWeight="bold">
+                          Hilton Da Nang
+                        </Typography>
                         <Typography
                           variant="body2"
                           sx={{ textDecoration: 'underline' }}
                         >
-                          {openEdit
-                            ? 'Hide price details'
-                            : 'Show price details'}
+                          50 Bach Dang St, Hai Chau District 550000 Da Nang,
+                          Vietnam
                         </Typography>
-                      </Button>
-                    </Grid>
-                    {/* START - DROPDOWN PRICE DETAIL */}
-                    {openEdit ? (
-                      <>
-                        <Grid item xs={12} sm={12} md={12}>
-                          <Divider flexItem sx={{ my: 1 }}></Divider>
-                          <Typography
-                            variant="body1"
-                            gutterBottom
-                            fontWeight="bold"
-                          >
-                            Room 1
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12}>
-                          <Typography
-                            variant="body2"
-                            className="title_paragraph"
-                          >
-                            King Guest Room River View, Honors Discount
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={6} md={6}>
-                          <Typography
-                            variant="body2"
-                            className="title_paragraph"
-                          >
-                            18 Nov 2022
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={6} md={6} textAlign="right">
-                          <Typography
-                            variant="body2"
-                            gutterBottom
-                            className="title_paragraph"
-                          >
-                            2,070,000.00₫
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12}>
-                          <Button variant="text" size="small" sx={{ p: 0 }}>
+                        <Divider orientation="horizontal" flexItem />
+
+                        <Grid container sx={{ py: 2 }}>
+                          <Grid item xs={6} sm={6} md={6}>
                             <Typography
                               variant="body2"
-                              sx={{ textDecoration: 'underline' }}
+                              gutterBottom
+                              className="title_paragraph"
                             >
-                              Change room
+                              Duration of Stay
                             </Typography>
-                          </Button>
-                        </Grid>
-                        <Grid item xs={6} sm={6} md={6}>
-                          <Typography
-                            variant="body1"
-                            gutterBottom
-                            fontWeight="bold"
-                          >
-                            Total room charge
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={6} md={6} textAlign="right">
-                          <Typography
-                            variant="body1"
-                            gutterBottom
-                            fontWeight="bold"
-                          >
-                            7,360,000.00₫
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12}>
-                          <Typography
-                            variant="body2"
-                            className="title_paragraph"
-                          >
-                            Service Charge 5.00 % per room, per stay
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={6} md={6}>
-                          <Typography
-                            variant="body1"
-                            gutterBottom
-                            fontWeight="bold"
-                          >
-                            Total fees
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={6} md={6} textAlign="right">
-                          <Typography
-                            variant="body1"
-                            gutterBottom
-                            fontWeight="bold"
-                          >
-                            368,000.00₫
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12}>
-                          <Typography
-                            variant="body2"
-                            className="title_paragraph"
-                          >
-                            8.00 % per room, per night
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={6} md={6}>
-                          <Typography
-                            variant="body1"
-                            gutterBottom
-                            fontWeight="bold"
-                          >
-                            Total taxes
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={6} md={6} textAlign="right">
-                          <Typography
-                            variant="body1"
-                            gutterBottom
-                            fontWeight="bold"
-                          >
-                            362,880.00₫
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12} textAlign="right">
-                          <Divider flexItem sx={{ my: 2 }}>
-                            {' '}
-                          </Divider>
-                          <Typography
-                            variant="body1"
-                            gutterBottom
-                            fontWeight="bold"
-                          >
-                            Total for stay: 4,898,880.00₫
-                          </Typography>
-                        </Grid>
-                      </>
-                    ) : (
-                      <>
-                        <Grid item xs={6} sm={6} md={6}>
-                          <Typography variant="body2" gutterBottom>
-                            Total room charge
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={6} md={6}>
-                          <Typography
-                            variant="body2"
-                            gutterBottom
-                            textAlign="right"
-                          >
-                            4,320,000.00₫
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={6} md={6}>
-                          <Typography variant="body2" gutterBottom>
-                            Total fees
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={6} md={6}>
-                          <Typography
-                            variant="body2"
-                            gutterBottom
-                            textAlign="right"
-                          >
-                            216,000.00₫
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={6} md={6}>
-                          <Typography variant="body2" gutterBottom>
-                            Total taxes
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={6} md={6}>
-                          <Typography
-                            variant="body2"
-                            gutterBottom
-                            textAlign="right"
-                          >
-                            362,880.00₫
-                          </Typography>
-                        </Grid>
-                      </>
-                    )}
-                  </Grid>
-                  {/* END - DROPDOWN PRICE DETAIL */}
-                  <Typography variant="body1" gutterBottom>
-                    {' '}
-                    All fields are required unless marked optional.
-                  </Typography>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      borderBottom: '1px solid rgb(0,0,0,0.2)',
-                      pb: 1,
-                    }}
-                  >
-                    <FaRegCreditCard
-                      style={{ fontSize: '25px', marginRight: '15px' }}
-                    />
-                    <Typography variant="h6" fontWeight="bold">
-                      Payment
-                    </Typography>
-                  </Box>
-                  <FormControl>
-                    <RadioGroup
-                      aria-labelledby="demo-radio-buttons-group-label"
-                      defaultValue="VISA"
-                      name="radio-buttons-group"
-                    >
-                      <FormControlLabel
-                        value="VISA"
-                        control={<Radio />}
-                        label="VISA"
-                        onClick={() => {
-                          setPaymentMethod('VISA');
-                        }}
-                      />
-                      {/* START - PAYMENTMETHOD VISA */}
-                      {paymentMethod === 'VISA' && (
-                        <Grid container>
-                          <Grid
-                            item
-                            xs={12}
-                            sm={12}
-                            md={12}
-                            display="flex"
-                            alignItems="center"
-                            justifyContent="center"
-                            sx={{
-                              py: 2,
-                              backgroundColor: 'rgb(247, 249, 250)',
-                            }}
-                          >
+                          </Grid>
+                          <Grid item xs={6} sm={6} md={6}>
                             <Typography variant="body2" gutterBottom>
-                              We accept the following cards to guarantee your
-                              booking.
+                              1 night
                             </Typography>
-                            <FaCcVisa
-                              style={{ fontSize: '30px', margin: '0 10px' }}
-                            />
-                            <FaCcMastercard style={{ fontSize: '30px' }} />
-                            <Divider />
                           </Grid>
-                          <Grid item xs={12} md={5}>
-                            <FormLabel sx={{ color: 'rgba(0,0,0,1)' }}>
-                              Credit Card Name
-                            </FormLabel>
-                            <Box>
-                              <Controller
-                                control={control}
-                                name="cardName"
-                                defaultValue=""
-                                render={({ field }) => (
-                                  <TextField
-                                    margin="normal"
-                                    name="cardName"
-                                    label="Name"
-                                    autoFocus
-                                    {...field}
-                                    fullWidth
-                                  />
-                                )}
-                              />
-                              {errors.email && (
-                                <Typography variant="body2" color="red">
-                                  {errors.email.message}
-                                </Typography>
-                              )}
-                            </Box>
+                          <Grid item xs={6} sm={6} md={6}>
+                            <Typography
+                              variant="body2"
+                              gutterBottom
+                              className="title_paragraph"
+                            >
+                              Check-in
+                            </Typography>
                           </Grid>
-                          <Grid item xs={12} md={1}></Grid>
-                          <Grid item xs={12} md={5}>
-                            <FormLabel sx={{ color: 'rgba(0,0,0,1)' }}>
-                              Credit Card Number
-                            </FormLabel>
-                            <Box>
-                              <Controller
-                                control={control}
-                                name="cardNumber"
-                                defaultValue=""
-                                render={({ field }) => (
-                                  <TextField
-                                    margin="normal"
-                                    name="cardNumber"
-                                    label="16 digit number"
-                                    autoFocus
-                                    {...field}
-                                    fullWidth
-                                  />
-                                )}
-                              />
-                              {errors.email && (
-                                <Typography variant="body2" color="red">
-                                  {errors.email.message}
-                                </Typography>
-                              )}
-                            </Box>
+                          <Grid item xs={6} sm={6} md={6}>
+                            <Typography variant="body2" gutterBottom>
+                              Saturday, 19 November 2022 (From 14:00)
+                            </Typography>
                           </Grid>
-                          <Grid item xs={12} md={5}>
-                            <FormLabel sx={{ color: 'rgba(0,0,0,1)' }}>
-                              Expiry date*
-                            </FormLabel>
-                            <Box>
-                              <Controller
-                                control={control}
-                                name="expiryDate"
-                                defaultValue=""
-                                render={({ field }) => (
-                                  <TextField
-                                    margin="normal"
-                                    name="expiryDate"
-                                    label="MM/YY"
-                                    autoFocus
-                                    fullWidth
-                                    {...field}
-                                  />
-                                )}
-                              />
-                              {errors.email && (
-                                <Typography variant="body2" color="red">
-                                  {errors.email.message}
-                                </Typography>
-                              )}
-                            </Box>
+                          <Grid item xs={6} sm={6} md={6}>
+                            <Typography
+                              variant="body2"
+                              gutterBottom
+                              className="title_paragraph"
+                            >
+                              Checkout
+                            </Typography>
                           </Grid>
-                          <Grid item xs={12} md={1}></Grid>
-                          <Grid item xs={12} md={5}>
-                            <FormLabel sx={{ color: 'rgba(0,0,0,1)' }}>
-                              CVV
-                            </FormLabel>
-                            <Box>
-                              <Controller
-                                control={control}
-                                name="CVV"
-                                defaultValue=""
-                                render={({ field }) => (
-                                  <TextField
-                                    margin="normal"
-                                    name="CVV"
-                                    label="Last three digits on sigature strip"
-                                    autoFocus
-                                    fullWidth
-                                    {...field}
-                                  />
-                                )}
-                              />
-                              {errors.email && (
-                                <Typography variant="body2" color="red">
-                                  {errors.email.message}
-                                </Typography>
-                              )}
-                            </Box>
+                          <Grid item xs={6} sm={6} md={6}>
+                            <Typography variant="body2" gutterBottom>
+                              Saturday, 19 November 2022 (Before 12:00)
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6} sm={6} md={6}>
+                            <Typography
+                              variant="body2"
+                              gutterBottom
+                              className="title_paragraph"
+                            >
+                              Room type
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6} sm={6} md={6}>
+                            <Typography variant="body2" gutterBottom>
+                              Family Room
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6} sm={6} md={6}>
+                            <Typography
+                              variant="body2"
+                              gutterBottom
+                              className="title_paragraph"
+                            >
+                              No. of rooms
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6} sm={6} md={6}>
+                            <Typography variant="body2" gutterBottom>
+                              1 Room
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6} sm={6} md={6}>
+                            <Typography
+                              variant="body2"
+                              gutterBottom
+                              className="title_paragraph"
+                            >
+                              Guests per room
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6} sm={6} md={6}>
+                            <Typography variant="body2" gutterBottom>
+                              4 Guests
+                            </Typography>
                           </Grid>
                         </Grid>
-                      )}
-                      {/* END - PAYMENTMETHOD VISA */}
-
-                      <FormControlLabel
-                        value="stripe"
-                        control={<Radio />}
-                        label="Stripe"
-                        onClick={() => {
-                          setPaymentMethod('Stripe');
-                        }}
-                      />
-                    </RadioGroup>
-                  </FormControl>
-                  <Divider sx={{ my: 2 }} />
-                  <Box sx={{ width: '80%' }}>
-                    <Typography variant="body1" fontWeight="bold" gutterBottom>
-                      Guarantee and Cancellation Policy
-                    </Typography>
-                    <Typography variant="body1" gutterBottom>
-                      There is a credit card required for this reservation. Free
-                      cancellation before 11:59 PM local hotel time on 16 Nov
-                      2022.
-                    </Typography>
-                    <Typography variant="body1" fontWeight="bold" gutterBottom>
-                      By clicking "Book Reservation," I agree to the &nbsp;
-                      <a href="/" style={{ color: '#104C97' }}>
-                        Rules and Restrictions
-                      </a>
-                      &nbsp;
-                      <a href="/" style={{ color: '#104C97' }}>
-                        Site Usage Agreement
-                      </a>
-                      and agree that Hilton will collect, use, share and
-                      transfer my information as set out in Hilton’s Global
-                      Privacy Statement
-                    </Typography>
-                    <Typography variant="body1" fontWeight="bold" gutterBottom>
-                      California consumers, click here, Opens new tab to learn
-                      about Hilton's collection and use of your personal
-                      information.
-                    </Typography>
-                    <Typography variant="body1" gutterBottom>
-                      I also agree to the &nbsp;
-                      <a href="/" style={{ color: '#104C97' }}>
-                        Hilton Honors Program Terms and Conditions.
-                      </a>
-                    </Typography>
-                  </Box>
-                  <Button
-                    type="submit"
-                    size="large"
-                    variant="contained"
-                    sx={{ mt: 3, mb: 2 }}
-                  >
-                    Book Reservation
-                  </Button>
+                        <Divider orientation="horizontal" flexItem />
+                        <Box sx={{ py: 2 }}>
+                          <Typography variant="body1" fontWeight="bold">
+                            Lead guest
+                          </Typography>
+                          <Typography variant="body1">Crit dang</Typography>
+                        </Box>
+                        <Divider orientation="horizontal" flexItem />
+                        <Box sx={{ py: 2 }}>
+                          <Typography variant="body1" fontWeight="600">
+                            Your Information
+                          </Typography>
+                          <Typography variant="body1">huy huy</Typography>
+                          <Typography variant="body1">+841231654</Typography>
+                          <Typography variant="body1">hu@gmail.com</Typography>
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                  {/* END - SIDE OVERALL */}
                 </Grid>
-                <Grid item xs={12} sm={12} md={1}></Grid>
-                {/* START - SIDE OVERALL */}
-                <Grid item xs={12} sm={12} md={3}>
-                  <Card>
-                    <CardMedia
-                      component="img"
-                      height="200"
-                      src="https://www.hilton.com/im/en/DADDVHI/9210432/daddv-the-sail-2.jpg?impolicy=crop&cw=5428&ch=2822&gravity=NorthWest&xposition=0&yposition=88&rw=750&rh=390"
-                      image="https://www.hilton.com/im/en/DADDVHI/9210432/daddv-the-sail-2.jpg?impolicy=crop&cw=5428&ch=2822&gravity=NorthWest&xposition=0&yposition=88&rw=750&rh=390"
-                      alt="green iguana"
-                    />
-                    <CardContent>
-                      <Typography variant="h6" fontWeight="bold">
-                        Hilton Da Nang
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{ textDecoration: 'underline' }}
-                      >
-                        50 Bach Dang St, Hai Chau District 550000 Da Nang,
-                        Vietnam
-                      </Typography>
-                      <Divider orientation="horizontal" flexItem />
-
-                      <Grid container sx={{ py: 2 }}>
-                        <Grid item xs={6} sm={6} md={6}>
-                          <Typography
-                            variant="body2"
-                            gutterBottom
-                            className="title_paragraph"
-                          >
-                            Duration of Stay
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={6} md={6}>
-                          <Typography variant="body2" gutterBottom>
-                            1 night
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={6} md={6}>
-                          <Typography
-                            variant="body2"
-                            gutterBottom
-                            className="title_paragraph"
-                          >
-                            Check-in
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={6} md={6}>
-                          <Typography variant="body2" gutterBottom>
-                            Saturday, 19 November 2022 (From 14:00)
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={6} md={6}>
-                          <Typography
-                            variant="body2"
-                            gutterBottom
-                            className="title_paragraph"
-                          >
-                            Checkout
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={6} md={6}>
-                          <Typography variant="body2" gutterBottom>
-                            Saturday, 19 November 2022 (Before 12:00)
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={6} md={6}>
-                          <Typography
-                            variant="body2"
-                            gutterBottom
-                            className="title_paragraph"
-                          >
-                            Room type
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={6} md={6}>
-                          <Typography variant="body2" gutterBottom>
-                            Family Room
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={6} md={6}>
-                          <Typography
-                            variant="body2"
-                            gutterBottom
-                            className="title_paragraph"
-                          >
-                            No. of rooms
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={6} md={6}>
-                          <Typography variant="body2" gutterBottom>
-                            1 Room
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={6} md={6}>
-                          <Typography
-                            variant="body2"
-                            gutterBottom
-                            className="title_paragraph"
-                          >
-                            Guests per room
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={6} md={6}>
-                          <Typography variant="body2" gutterBottom>
-                            4 Guests
-                          </Typography>
-                        </Grid>
-                      </Grid>
-                      <Divider orientation="horizontal" flexItem />
-                      <Box sx={{ py: 2 }}>
-                        <Typography variant="body1" fontWeight="bold">
-                          Lead guest
-                        </Typography>
-                        <Typography variant="body1">Crit dang</Typography>
-                      </Box>
-                      <Divider orientation="horizontal" flexItem />
-                      <Box sx={{ py: 2 }}>
-                        <Typography variant="body1" fontWeight="600">
-                          Your Information
-                        </Typography>
-                        <Typography variant="body1">huy huy</Typography>
-                        <Typography variant="body1">+841231654</Typography>
-                        <Typography variant="body1">hu@gmail.com</Typography>
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </Grid>
-                {/* END - SIDE OVERALL */}
-              </Grid>
-            </Container>
-          </Box>
-        </main>
-      </ThemeProvider>
-    </>
+              </Container>
+            </Box>
+          </main>
+        </ThemeProvider>
+      </>
+    </form>
   );
 }

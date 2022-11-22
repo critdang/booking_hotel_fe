@@ -19,7 +19,8 @@ const initialState = {
   From: moment(new Date()).format('MM/DD/YYYY'),
   To: moment(new Date()).add(1, 'days').format('MM/DD/YYYY'),
   room: '1 Room',
-  numberOfGuests: '1 Adult',
+  adult: '1 Adult',
+  kids: '1 Kid',
 };
 
 export default function SearchRoom() {
@@ -29,6 +30,7 @@ export default function SearchRoom() {
   const [inputSearch, setInputSearch] = React.useState(initialState);
   const submitSearch = (e) => {
     setSearchParams(inputSearch);
+    localStorage.setItem('searchInfo', JSON.stringify(inputSearch));
     navigate('/book/reservation/rooms');
   };
   return (
@@ -103,37 +105,34 @@ export default function SearchRoom() {
                         [e.target.name]: e.target.value,
                       });
                     }}
-                    style={{ marginRight: '20px' }}
+                    sx={{ mx: '10px' }}
                   >
                     <MenuItem value={'1 Room'}>1 Room</MenuItem>
                     <MenuItem value={'2 Room'}>2 Room</MenuItem>
                     <MenuItem value={'3 Room'}>3 Room</MenuItem>
                   </Select>
                   <Select
-                    value={inputSearch.numberOfGuests}
-                    name="numberOfGuests"
+                    value={inputSearch.adult}
+                    name="adult"
                     onChange={(e) => {
                       setInputSearch({
                         ...inputSearch,
                         [e.target.name]: e.target.value,
                       });
                     }}
-                    style={{ marginLeft: '20px' }}
+                    sx={{ mx: '10px' }}
                   >
                     <MenuItem value="">
                       <em>None</em>
                     </MenuItem>
                     <MenuItem value={'1 Adult'}>1 Adult</MenuItem>
                     <MenuItem value={'2 Adult'}>2 Adult</MenuItem>
-                    <MenuItem value={'1 Adult 1 Child'}>
-                      1 Adult 1 Child
-                    </MenuItem>
-                    <MenuItem value={'1 Adult 2 Child'}>
-                      2 Adult 1 Child
-                    </MenuItem>
+                    <MenuItem value={'3 Adult'}>3 Adult</MenuItem>
+                    <MenuItem value={'4 Adult'}>4 Adult</MenuItem>
+                    <MenuItem value={'5 Adult'}>5 Adult</MenuItem>
                   </Select>
                   <Select
-                    value={inputSearch.kid}
+                    value={inputSearch.kids}
                     name="kid"
                     onChange={(e) => {
                       setInputSearch({
@@ -141,11 +140,13 @@ export default function SearchRoom() {
                         [e.target.name]: e.target.value,
                       });
                     }}
-                    style={{ marginRight: '20px' }}
+                    sx={{ mx: '10px' }}
                   >
-                    <MenuItem value={'1 kid'}>1 kid</MenuItem>
-                    <MenuItem value={'2 kids'}>2 kids</MenuItem>
-                    <MenuItem value={'3 kids'}>3 kids</MenuItem>
+                    <MenuItem value={'1 Kid'}>1 Kid</MenuItem>
+                    <MenuItem value={'2 Kids'}>2 Kids</MenuItem>
+                    <MenuItem value={'3 Kids'}>3 Kids</MenuItem>
+                    <MenuItem value={'4 Kids'}>4 Kids</MenuItem>
+                    <MenuItem value={'5 Kids'}>5 Kids</MenuItem>
                   </Select>
                 </Grid>
 

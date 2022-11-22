@@ -28,6 +28,7 @@ export const AuthProvider = ({ children }) => {
     axios
       .post(API.LOGIN, data)
       .then((res) => {
+        console.log('🚀 ~ file: auth.jsx ~ line 31 ~ .then ~ res', res);
         if (res.data.success) {
           setUser(res.data.message.userInfo);
           localStorage.setItem(
