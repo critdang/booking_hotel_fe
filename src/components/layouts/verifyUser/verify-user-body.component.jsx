@@ -7,8 +7,6 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useParams } from 'react-router-dom';
-import helperFn from '../../../utils/helperFn';
 
 function Copyright(props) {
   return (
@@ -31,19 +29,6 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function UpdatePassword() {
-  // const [verify] = useMutation(VERIFY, {
-  //   onError: (err) => {
-  //     helperFn.toastAlertFail(err.message);
-  //   },
-  // });
-  let { tokenId } = useParams();
-
-  // React.useEffect(() => {
-  //   verify();
-  //   if (data) {
-  //     helperFn.toastAlertSuccess(data.verify);
-  //   }
-  // }, [verify, tokenId]);
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">

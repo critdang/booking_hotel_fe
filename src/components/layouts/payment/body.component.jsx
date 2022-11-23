@@ -20,6 +20,8 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
+  Modal,
+  DialogContentText,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import * as React from 'react';
@@ -31,7 +33,13 @@ import { Controller, useForm } from 'react-hook-form';
 import { useState, useEffect } from 'react';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FaCcMastercard, FaCcVisa, FaRegCreditCard } from 'react-icons/fa';
+import {
+  FaAward,
+  FaCcMastercard,
+  FaCcVisa,
+  FaPercent,
+  FaRegCreditCard,
+} from 'react-icons/fa';
 import PropTypes from 'prop-types';
 import { styled } from '@mui/material/styles';
 import '../../../assets/css/payment/payment.css';
@@ -84,10 +92,21 @@ BootstrapDialogTitle.propTypes = {
   onClose: PropTypes.func.isRequired,
 };
 
+const styleModal = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 1200,
+  bgcolor: 'white',
+  borderRadius: '25px',
+  boxShadow: 24,
+  p: 4,
+};
+
 export default function Body(props) {
   // [START - GET ROOMS AND ALTER DATA ]
-  const rooms = JSON.parse(localStorage.getItem('rooms'));
-  console.log('🚀 ~ file: body.component.jsx ~ line 90 ~ Body ~ rooms', rooms);
+  const rooms = JSON.parse(sessionStorage.getItem('rooms'));
   let totalRoomCharge = 0;
   rooms.map((room) => (totalRoomCharge += room.price));
   let totalTaxes = totalRoomCharge * 0.08;
@@ -101,12 +120,13 @@ export default function Body(props) {
   // [END - GET ROOMS AND ALTER DATA ]
 
   // [START - GET SEARCH PARAMS]
-  const search = JSON.parse(localStorage.getItem('searchInfo'));
+  const search = JSON.parse(sessionStorage.getItem('searchInfo'));
   const searchInfo = {
     From: search.From,
     To: search.To,
   };
   // [END - GET SEARCH PARAMS]
+
   // Start config
   const [open, setOpen] = React.useState(false);
 
@@ -124,7 +144,10 @@ export default function Body(props) {
   // Start config responsive
   const theme = useTheme();
   const mobileView = useMediaQuery(theme.breakpoints.down('sm'));
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+
   // End config responsive
+
   const options = [
     { label: 'Lifestyle', value: 'lifestyle' },
     { label: 'Area', value: 'area' },
@@ -132,6 +155,10 @@ export default function Body(props) {
     { label: 'Comedy', value: 'comedy' },
     { label: 'Entertainment', value: 'entertainment' },
   ];
+  const [openRules, setOpenRules] = React.useState(false);
+  const handleOpenRules = () => setOpenRules(true);
+  const handleCloseRules = () => setOpenRules(false);
+
   const [paymentMethod, setPaymentMethod] = useState('VISA');
 
   const [err, setErr] = useState(false);
@@ -165,21 +192,7 @@ export default function Body(props) {
     '🚀 ~ file: body.component.jsx ~ line 140 ~ Body ~ errors',
     errors
   );
-  // fetch chosen room for total order
-  useEffect(() => {
-    axios
-      .get(`${API.GET_ROOM_BY_CATEGORY}/${rooms.id}`)
-      .then((res) => {
-        if (res.data.success) {
-        }
-      })
-      .catch((error) => {
-        console.log(
-          '🚀 ~ file: room-body.component.jsx ~ line 124 ~ handleSubmitRoom ~ error',
-          error
-        );
-      });
-  }, []);
+
   const submitOrder = (data) => {
     const payment = {
       cardName: data.cardName,
@@ -188,7 +201,7 @@ export default function Body(props) {
       cardCVV: data.cardCVV,
       paymentMethod: paymentMethod,
     };
-    const guestInfo = JSON.parse(localStorage.getItem('guestInfo'));
+    const guestInfo = JSON.parse(sessionStorage.getItem('guestInfo'));
     const result = {
       payment,
       rooms,
@@ -284,8 +297,7 @@ export default function Body(props) {
                                       <Typography
                                         variant="subtitle2"
                                         sx={{ fontWeight: 600 }}
-                                      >
-                                      </Typography>
+                                      ></Typography>
                                       <Typography
                                         variant="subtitle2"
                                         sx={{ fontWeight: 600 }}
@@ -827,16 +839,173 @@ export default function Body(props) {
                         gutterBottom
                       >
                         By clicking "Book Reservation," I agree to the &nbsp;
-                        <a href="/" style={{ color: '#104C97' }}>
+                        <Button
+                          onClick={handleOpenRules}
+                          sx={{
+                            border: 'none',
+                            backgroundColor: 'white',
+                            textDecoration: 'underline',
+                            textTransform: 'none',
+                            p: 0,
+                            fontWeight: 'bold',
+                            color: '#104C97',
+                          }}
+                        >
+                          {' '}
                           Rules and Restrictions
-                        </a>
+                        </Button>
+                        {/* START - MODEL RULES AND RESTRICTIONS */}
+                        <Dialog
+                          fullScreen={fullScreen}
+                          maxWidth="lg"
+                          open={openRules}
+                          onClose={handleCloseRules}
+                          aria-labelledby="responsive-dialog-title"
+                        >
+                          <DialogTitle
+                            id="responsive-dialog-title"
+                            sx={{ backgroundColor: '#009cde' }}
+                          >
+                            <IconButton
+                              aria-label="close"
+                              onClick={handleCloseRules}
+                              sx={{
+                                position: 'absolute',
+                                right: 8,
+                                top: 8,
+                                // color: (theme) => theme.palette.grey[500],
+                                color: 'white',
+                              }}
+                            >
+                              <CloseIcon />
+                            </IconButton>
+                            <Typography
+                              variant="h5"
+                              fontWeight="bold"
+                              textAlign="center"
+                              gutterBottom
+                              sx={{ mt: 2 }}
+                              color="white"
+                            >
+                              Rules and Restrictions
+                            </Typography>
+                          </DialogTitle>
+                          <DialogTitle id="responsive-dialog-title"></DialogTitle>
+
+                          <DialogContent>
+                            <DialogContentText sx={{ color: 'rgba(0,0,0,1)' }}>
+                              <>
+                                <Grid container spacing={3}>
+                                  <Grid item xs={12} sm={12} md={12}></Grid>
+
+                                  <Grid item xs={12} sm={12} md={6}>
+                                    <Typography
+                                      variant="body2"
+                                      sx={{
+                                        color: 'black',
+                                      }}
+                                      textAlign="left"
+                                      gutterBottom
+                                    >
+                                      At check in, the front desk will verify
+                                      your check-out date. Rates quoted are
+                                      based on check-in date and length of stay.
+                                      Should you choose to depart early, price
+                                      is subject to change.
+                                      <br />
+                                      We reserve the right to cancel or modify
+                                      reservations where it appears that a
+                                      customer has engaged in fraudulent or
+                                      inappropriate activity or under other
+                                      circumstances where it appears that the
+                                      reservations contain or resulted from a
+                                      mistake or error.
+                                      <br />
+                                      Totals listed here are estimated based on
+                                      current taxes and exchange rates (if
+                                      applicable) and do not include additional
+                                      fees/charges that may be incurred during
+                                      your stay.
+                                    </Typography>
+                                  </Grid>
+                                  <Grid item xs={12} sm={12} md={6}>
+                                    <Box display="flex" alignItems="center">
+                                      <FaPercent
+                                        style={{
+                                          marginRight: '10px',
+                                          border: '2px solid black',
+                                          borderRadius: '50%',
+                                          fontSize: '24px',
+                                          padding: '3px',
+                                        }}
+                                      />
+
+                                      <Typography
+                                        variant="body1"
+                                        fontWeight="bold"
+                                        gutterBottom
+                                      >
+                                        Taxes
+                                      </Typography>
+                                    </Box>
+                                    <Typography variant="body2" gutterBottom>
+                                      8.00 % per room, per night
+                                    </Typography>
+                                    <Box display="flex" alignItems="center">
+                                      <FaAward
+                                        style={{
+                                          marginRight: '10px',
+                                          fontSize: '22px',
+                                        }}
+                                      />
+                                      <Typography
+                                        variant="body1"
+                                        fontWeight="bold"
+                                        gutterBottom
+                                      >
+                                        Guarantee and Cancellation Policy
+                                      </Typography>
+                                    </Box>
+                                    <Typography variant="body2" gutterBottom>
+                                      There is a credit card required for this
+                                      reservation. Free cancellation before
+                                      11:59 PM local hotel time on 21 Nov 2022.
+                                      <br />
+                                      If you use a debit/credit card to check
+                                      in, a hold may be placed on your card
+                                      account for the full anticipated amount to
+                                      be owed to the hotel, including estimated
+                                      incidentals, through your date of
+                                      check-out and such hold may not be
+                                      released for 72 hours from the date of
+                                      check-out or longer at the discretion of
+                                      your card issuer.
+                                    </Typography>
+                                  </Grid>
+                                </Grid>
+                              </>
+                            </DialogContentText>
+                          </DialogContent>
+                        </Dialog>
+                        {/* END - MODEL RULES AND RESTRICTIONS */}
                         &nbsp;
-                        <a href="/" style={{ color: '#104C97' }}>
+                        <Button
+                          sx={{
+                            border: 'none',
+                            backgroundColor: 'white',
+                            textDecoration: 'underline',
+                            textTransform: 'none',
+                            p: 0,
+                            fontWeight: 'bold',
+                            color: '#104C97',
+                          }}
+                        >
+                          {' '}
                           Site Usage Agreement
-                        </a>
-                        and agree that Hilton will collect, use, share and
-                        transfer my information as set out in Hilton’s Global
-                        Privacy Statement
+                        </Button>
+                        &nbsp; and agree that Hilton will collect, use, share
+                        and transfer my information as set out in Hilton’s
+                        Global Privacy Statement
                       </Typography>
                       <Typography
                         variant="body1"
@@ -849,9 +1018,20 @@ export default function Body(props) {
                       </Typography>
                       <Typography variant="body1" gutterBottom>
                         I also agree to the &nbsp;
-                        <a href="/" style={{ color: '#104C97' }}>
+                        <Button
+                          sx={{
+                            border: 'none',
+                            backgroundColor: 'white',
+                            textDecoration: 'underline',
+                            textTransform: 'none',
+                            p: 0,
+                            fontWeight: 'bold',
+                            color: '#104C97',
+                          }}
+                        >
+                          {' '}
                           Hilton Honors Program Terms and Conditions.
-                        </a>
+                        </Button>
                       </Typography>
                     </Box>
                     <Button

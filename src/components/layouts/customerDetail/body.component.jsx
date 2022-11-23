@@ -69,7 +69,7 @@ export default function Body() {
     resolver: yupResolver(schema),
   });
   const submitGuest = (data) => {
-    localStorage.setItem('guestInfo', JSON.stringify(data));
+    sessionStorage.setItem('guestInfo', JSON.stringify(data));
     window.scrollTo(0, 0);
     navigate('/book/reservation/payment');
   };

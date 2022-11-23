@@ -52,7 +52,7 @@ function App() {
               <Route path="/signup" element={<Signup />} />
               {signed && <Route path="/profile" element={<Profile />} />}
               {/* Start - Create Order */}
-              <Route path="/book/reservation/rooms" element={<ReservationRoom />} />
+              <Route path="/book/reservation/rooms/" element={<ReservationRoom />} />
               <Route path="/book/reservation" element={<CustomerDetail />} />
               <Route path="/book/reservation/payment" element={<Payment />} />
               {/* End - Create Order */}

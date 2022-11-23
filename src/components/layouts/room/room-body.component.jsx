@@ -145,20 +145,25 @@ export default function RoomBody() {
 
   // const onClick = (type) => () => dispatch({ type: type });
   const handleBook = (id, price, roomName) => {
+    const searchInfo = {
+      From: moment(new Date()).format('MM/DD/YYYY'),
+      To: moment(new Date()).add(1, 'days').format('MM/DD/YYYY'),
+      room: '1 Room',
+      adult: '1 Adult',
+      kids: '1 Kid',
+    };
+    sessionStorage.setItem('searchInfo', JSON.stringify(searchInfo));
+
     if (Object.getOwnPropertyNames(searchParams).length === 0) {
       const rooms = [
         {
-          From: moment(new Date()).format('MM/DD/YYYY'),
-          To: moment(new Date()).add(1, 'days').format('MM/DD/YYYY'),
-          room: 1,
-          adult: 1,
-          kids: 0,
           roomId: id,
           price,
           roomName,
         },
       ];
-      localStorage.setItem('rooms', JSON.stringify(rooms));
+
+      sessionStorage.setItem('rooms', JSON.stringify(rooms));
     }
     window.scrollTo(0, 0);
     navigate('/book/reservation');

@@ -49,7 +49,6 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Mousewheel, Keyboard, Autoplay } from 'swiper';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { toastAlertSuccess } from './../../../utils/helperFn';
-
 const theme = createTheme();
 const initialState = {
   From: moment(new Date()).format('MM/DD/YYYY'),
@@ -91,7 +90,7 @@ const imageSources = [
 ];
 
 export default function Body() {
-  // test
+  // [START - DEFAULT CONFIG]
   const [open, setOpen] = React.useState(false);
   const [openAmenitiesModal, setOpenAmenitiesModal] = React.useState(false);
   const [openDesModal, setOpenDesModal] = React.useState(false);
@@ -111,10 +110,17 @@ export default function Body() {
   const handleClose = () => {
     setOpen(false);
   };
-  // test
+  // [END - DEFAULT CONFIG]
+  const [searchParams] = useSearchParams();
+  const From = searchParams.get('From');
+  const To = searchParams.get('To');
+  const room = searchParams.get('room');
+  const adult = searchParams.get('adult');
+  const kids = searchParams.get('kids');
+
   const [activeStep, setActiveStep] = React.useState(0);
   const [completed, setCompleted] = React.useState({});
-  const initialRooms = localStorage.getItem('totalRooms');
+  const initialRooms = sessionStorage.getItem('totalRooms');
   const rooms = [];
   for (let i = 0; i < initialRooms; i++) {
     rooms.push(`room ${i + 1}`);
