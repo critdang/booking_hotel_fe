@@ -19,7 +19,6 @@ import {
 import * as React from 'react';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
@@ -32,6 +31,11 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import { useState } from 'react';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import '@hassanmojab/react-modern-calendar-datepicker/lib/DatePicker.css';
+import DatePicker, {
+  Calendar,
+} from '@hassanmojab/react-modern-calendar-datepicker';
+import dayjs from 'dayjs';
 const theme = createTheme();
 const initialState = {
   From: moment(new Date()).format('MM/DD/YYYY'),
@@ -44,10 +48,6 @@ const initialState = {
 const initialRoom = [
   {
     adults: 1,
-    kids: 1,
-  },
-  {
-    adults: 2,
     kids: 0,
   },
 ];
@@ -72,6 +72,41 @@ export default function SearchRoom() {
   const showSearch = {
     rooms: rooms.length,
     guests: rooms.reduce((acc, cur) => acc + cur.adults + cur.kids, 0),
+  };
+
+  // [START - CONFIG CALENDER SEARCH ROOM]
+  const defaultFrom = {
+    year: dayjs().year(),
+    month: dayjs().month(),
+    day: dayjs().date(),
+  };
+  const defaultTo = {
+    year: dayjs().year(),
+    month: dayjs().month(),
+    day: dayjs().add(1, 'day').date(),
+  };
+  const defaultValue = {
+    from: defaultFrom,
+    to: defaultTo,
+  };
+  console.log(
+    '🚀 ~ file: search-room.component.jsx ~ line 92 ~ SearchRoom ~ defaultTo',
+    defaultTo
+  );
+  const [selectedDayRange, setSelectedDayRange] = useState(defaultValue);
+  console.log(
+    '🚀 ~ file: search-room.component.jsx ~ line 93 ~ SearchRoom ~ selectedDayRange',
+    selectedDayRange
+  );
+
+  const [openCalendar, setOpenCalendar] = useState(false);
+
+  const handleClickOpenCalendar = () => {
+    setOpenCalendar(true);
+  };
+
+  const handleCloseCalendar = () => {
+    setOpenCalendar(false);
   };
 
   const handleDecrementAdults = (name, index) => (event) => {
@@ -131,53 +166,148 @@ export default function SearchRoom() {
               pb: 6,
             }}
           >
-            <Container maxWidth="lg">
+            <Container maxWidth="md">
               <Grid container>
                 <Grid
                   item
                   xs={12}
-                  sm={12}
-                  md={7}
+                  sm={4}
+                  md={4}
                   display="flex"
                   justifyContent="center"
                   alignItems="center"
+                  sx={{ mb: 2 }}
                 >
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
-                      label="From"
-                      value={inputSearch.From}
-                      onChange={(e) => {
-                        setInputSearch({
-                          ...inputSearch,
-                          From: moment(e.$d).format('MM/DD/YYYY'),
-                        });
-                      }}
-                      renderInput={(params) => <TextField {...params} />}
-                    />
-                  </LocalizationProvider>
-                  <Box sx={{ mx: 2 }}> to </Box>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
-                      label="To"
-                      value={inputSearch.To}
-                      renderInput={(params) => <TextField {...params} />}
-                      onChange={(e) => {
-                        setInputSearch({
-                          ...inputSearch,
-                          To: moment(e.$d).format('MM/DD/YYYY'),
-                        });
-                      }}
-                    />
-                  </LocalizationProvider>
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      border: 'none',
+                      '&:hover': {
+                        border: 'none',
+                        backgroundColor: 'white',
+                      },
+                    }}
+                    onClick={handleClickOpenCalendar}
+                  >
+                    <Grid
+                      container
+                      display="contents"
+                      alignItems="center"
+                      justifyContent="center"
+                    >
+                      <Grid item xs={3} sm={3} md={3}>
+                        <Typography
+                          variant="h3"
+                          sx={{ mr: 1, fontWeight: 600 }}
+                        >
+                          {selectedDayRange.from.day}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3} sm={3} md={3}>
+                        <Typography
+                          variant="body1"
+                          fontWeight="bold"
+                          sx={{ color: 'black' }}
+                        >
+                          Nov
+                        </Typography>
+                        <Typography variant="body1" sx={{ color: 'black' }}>
+                          Thu
+                        </Typography>
+                      </Grid>
+                      <Divider orientation="vertical" flexItem />
+                      <Grid item xs={3} sm={3} md={3} sx={{ ml: '5px' }}>
+                        <Typography
+                          variant="h3"
+                          sx={{ mr: 1, fontWeight: 600 }}
+                        >
+                          {selectedDayRange.to.day}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3} sm={3} md={3}>
+                        <Typography
+                          variant="body1"
+                          fontWeight="bold"
+                          sx={{ color: 'black' }}
+                        >
+                          Nov
+                        </Typography>
+                        <Typography variant="body1" sx={{ color: 'black' }}>
+                          Thu
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Button>
+                  <Dialog
+                    fullWidth={true}
+                    fullScreen={fullScreenSearch}
+                    maxWidth="xs"
+                    open={openCalendar}
+                    onClose={handleCloseCalendar}
+                    sx={{
+                      '& .css-m9glnp-MuiPaper-root-MuiDialog-paper': {
+                        height: 'auto',
+                      },
+                    }}
+                  >
+                    <DialogTitle id="responsive-dialog-title">
+                      <IconButton
+                        aria-label="close"
+                        onClick={handleCloseCalendar}
+                        sx={{
+                          position: 'absolute',
+                          right: 8,
+                          top: 8,
+                          // color: (theme) => theme.palette.grey[500],
+                        }}
+                      >
+                        <CloseIcon />
+                      </IconButton>
+                      <Typography
+                        variant="h6"
+                        fontWeight="bold"
+                        textAlign="center"
+                        gutterBottom
+                        sx={{ mt: 2 }}
+                      >
+                        Rooms and Guests
+                      </Typography>
+                      <Divider orientation="horizontal" flexItem />
+                    </DialogTitle>
+                    <DialogContent>
+                      <DialogContentText>
+                        <>
+                          <Box
+                            item
+                            xs={12}
+                            sm={12}
+                            md={12}
+                            display="flex"
+                            alignItems="center"
+                            justifyContent="center"
+                          >
+                            <Calendar
+                              value={selectedDayRange}
+                              onChange={setSelectedDayRange}
+                              colorPrimary="#0fbcf9" // added this
+                              colorPrimaryLight="rgba(75, 207, 250, 0.4)" // and this
+                              shouldHighlightWeekends
+                            />
+                          </Box>
+                        </>
+                      </DialogContentText>
+                    </DialogContent>
+                  </Dialog>
                 </Grid>
                 <Grid
                   item
                   xs={12}
-                  sm={12}
-                  md={3}
+                  sm={4}
+                  md={4}
                   display="flex"
                   justifyContent="center"
                   alignItems="center"
+                  sx={{ mb: 2 }}
                 >
                   {/* START - OTHERS */}
                   <Button variant="outlined" onClick={handleClickOpenSearch}>
@@ -445,22 +575,22 @@ export default function SearchRoom() {
                   </Dialog>
                   {/* END - OTHERS */}
                 </Grid>
-
                 <Grid
                   xs={12}
-                  sm={12}
-                  md={2}
+                  sm={4}
+                  md={4}
                   item
                   display="flex"
                   justifyContent="center"
                   alignItems="center"
+                  sx={{ mb: 2 }}
                 >
                   <Button
                     variant="contained"
                     style={{ height: '35px' }}
                     onClick={submitSearch}
                   >
-                    Search
+                    Search Room
                   </Button>
                 </Grid>
               </Grid>
