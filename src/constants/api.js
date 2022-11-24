@@ -24,3 +24,5 @@ export const UPLOAD_AVATAR = `${BASE_URL}/user/updateAvatar`;
 export const GET_CATEGORY = `${BASE_URL}/category`;
 
 export const GET_ROOM_BY_CATEGORY = `${BASE_URL}/category`;
+
+export const CREATE_ORDER = `${BASE_URL}/order`;

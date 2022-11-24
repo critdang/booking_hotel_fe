@@ -1,8 +1,8 @@
 
 import { toast } from 'react-toastify';
 
-export const toastAlertSuccess = (text) => {
-  toast.success(text, {
+export const toastAlertSuccess =  (text) => {
+   toast.success(text, {
     position: 'top-right',
     autoClose: 3000,
     hideProgressBar: false,

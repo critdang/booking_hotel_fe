@@ -31,7 +31,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import { useState } from 'react';
-
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 const theme = createTheme();
 const initialState = {
   From: moment(new Date()).format('MM/DD/YYYY'),
@@ -40,6 +40,17 @@ const initialState = {
   adult: '1 Adult',
   kids: '1 Kid',
 };
+
+const initialRoom = [
+  {
+    adults: 1,
+    kids: 1,
+  },
+  {
+    adults: 2,
+    kids: 0,
+  },
+];
 
 export default function SearchRoom() {
   // [START - CONFIG SEARCH MODAL]
@@ -57,7 +68,43 @@ export default function SearchRoom() {
   // [END - CONFIG SEARCH MODAL]
 
   // [START - CONFIG SEARCH ROOM]
-  const [room, setRoom] = useState(1);
+  const [rooms, setRooms] = useState(initialRoom);
+  const showSearch = {
+    rooms: rooms.length,
+    guests: rooms.reduce((acc, cur) => acc + cur.adults + cur.kids, 0),
+  };
+
+  const handleDecrementAdults = (name, index) => (event) => {
+    let newArr = rooms.map((item, i) => {
+      if (index === i) {
+        if (name === 'kids') {
+          return { ...item, [name]: item.kids - 1 };
+        }
+        return { ...item, [name]: item.adults - 1 };
+      } else {
+        return item;
+      }
+    });
+    setRooms(newArr);
+  };
+
+  const handleIncrementAdults = (name, index) => (event) => {
+    let newArr = rooms.map((item, i) => {
+      if (index == i) {
+        if (name === 'kids') {
+          return { ...item, [name]: item.kids + 1 };
+        }
+        return { ...item, [name]: item.adults + 1 };
+      } else {
+        return item;
+      }
+    });
+    setRooms(newArr);
+  };
+
+  const handleAddRoom = () => {
+    setRooms([...rooms, { adults: 1, kids: 0 }]);
+  };
   // [END - CONFIG SEARCH ROOM]
   const navigate = useNavigate();
   let [searchParams, setSearchParams] = useSearchParams();
@@ -71,16 +118,6 @@ export default function SearchRoom() {
       search: `?From=${inputSearch.From}&To=${inputSearch.To}&room=${inputSearch.room}&adult=${inputSearch.adult}&kids=${inputSearch.kids}`,
     });
   };
-  const [counter, setCounter] = React.useState(0);
-
-  const handleIncrementKids = () => {
-    setCounter(counter + 1);
-  };
-
-  const handleDecrementKids = () => {
-    setCounter(counter - 1);
-  };
-  const displayCounter = counter > 0;
 
   return (
     <>
@@ -144,7 +181,7 @@ export default function SearchRoom() {
                 >
                   {/* START - OTHERS */}
                   <Button variant="outlined" onClick={handleClickOpenSearch}>
-                    2 rooms, 2 guests
+                    {showSearch.rooms} Rooms, {showSearch.guests} Guests
                   </Button>
                   <Dialog
                     fullWidth={true}
@@ -185,127 +222,181 @@ export default function SearchRoom() {
                     <DialogContent>
                       <DialogContentText sx={{ color: 'rgba(0,0,0,1)' }}>
                         <>
-                          <Typography>{room}</Typography>
                           <Grid container spacing="2">
-                            <Grid
-                              item
-                              xs={4}
-                              sm={4}
-                              md={4}
-                              display="flex"
-                              flexDirection="column"
-                            >
-                              <Typography variant="body1" fontWeight="bold">
-                                Rooms
-                              </Typography>
-                              <Box>
-                                {Array.from(Array(room)).map((item, index) => (
-                                  <Typography
-                                    variant="body2"
-                                    sx={{ mt: 1, mb: 1 }}
-                                  >
-                                    Room {index + 1}
-                                  </Typography>
-                                ))}
-                              </Box>
-                            </Grid>
-                            <Grid
-                              item
-                              xs={4}
-                              sm={4}
-                              md={4}
-                              display="flex"
-                              flexDirection="column"
-                              alignItems="center"
-                              justifyContent="center"
-                            >
-                              <Typography variant="body1" fontWeight="bold">
-                                Adults(18+)
-                              </Typography>
-                              {Array.from(Array(room)).map((item, index) => (
-                                <Box
+                            {rooms.map((room, index) => (
+                              <>
+                                <Grid
+                                  item
+                                  xs={4}
+                                  sm={4}
+                                  md={4}
                                   display="flex"
+                                  flexDirection="column"
+                                >
+                                  <Typography variant="body1" fontWeight="bold">
+                                    Rooms
+                                  </Typography>
+                                  <Box>
+                                    <Typography variant="body2">{}</Typography>
+                                    <>
+                                      <Box display="flex" alignItems="center">
+                                        {Array(room).length > 1 && (
+                                          <IconButton
+                                            color="primary"
+                                            sx={{ pl: 0 }}
+                                          >
+                                            <HighlightOffIcon />
+                                          </IconButton>
+                                        )}
+
+                                        <Typography
+                                          variant="body2"
+                                          sx={{ py: '10px' }}
+                                        >
+                                          Room {index + 1}
+                                        </Typography>
+                                      </Box>
+                                    </>
+                                  </Box>
+                                </Grid>
+                                <Grid
+                                  item
+                                  xs={4}
+                                  sm={4}
+                                  md={4}
+                                  display="flex"
+                                  flexDirection="column"
                                   alignItems="center"
                                   justifyContent="center"
                                 >
-                                  {displayCounter ? (
-                                    <IconButton
-                                      color="primary"
-                                      onClick={handleDecrementKids}
-                                    >
-                                      <RemoveCircleOutlineIcon />
-                                    </IconButton>
-                                  ) : (
-                                    <IconButton
-                                      disabled
-                                      color="primary"
-                                      onClick={handleDecrementKids}
-                                    >
-                                      <RemoveCircleOutlineIcon />
-                                    </IconButton>
-                                  )}
-                                  <Typography
-                                    variant="body1"
-                                    textAlign="center"
-                                  >
-                                    {counter}
+                                  <Typography variant="body1" fontWeight="bold">
+                                    Adults(18+)
                                   </Typography>
 
-                                  <IconButton
-                                    color="primary"
-                                    onClick={handleIncrementKids}
+                                  <Box
+                                    display="flex"
+                                    alignItems="center"
+                                    justifyContent="center"
+                                    sx={{ py: '8px' }}
                                   >
-                                    <AddCircleOutlineIcon />
-                                  </IconButton>
-                                </Box>
-                              ))}
-                            </Grid>
-                            <Grid
-                              item
-                              xs={4}
-                              sm={4}
-                              md={4}
-                              display="flex"
-                              flexDirection="column"
-                              alignItems="center"
-                              justifyContent="center"
-                            >
-                              <Typography variant="body1" fontWeight="bold">
-                                Kids
-                              </Typography>
-                              <Box
-                                display="flex"
-                                alignItems="center"
-                                justifyContent="center"
-                              >
-                                {displayCounter ? (
-                                  <IconButton
-                                    color="primary"
-                                    onClick={handleDecrementKids}
-                                  >
-                                    <RemoveCircleOutlineIcon />
-                                  </IconButton>
-                                ) : (
-                                  <IconButton
-                                    disabled
-                                    color="primary"
-                                    onClick={handleDecrementKids}
-                                  >
-                                    <RemoveCircleOutlineIcon />
-                                  </IconButton>
-                                )}
-                                <Typography variant="body1" textAlign="center">
-                                  {counter}
-                                </Typography>
+                                    {room.adults > 0 ? (
+                                      <IconButton
+                                        color="primary"
+                                        onClick={handleDecrementAdults(
+                                          'adults',
+                                          index
+                                        )}
+                                        sx={{ p: 0 }}
+                                      >
+                                        <RemoveCircleOutlineIcon
+                                          sx={{ p: 0 }}
+                                        />
+                                      </IconButton>
+                                    ) : (
+                                      <IconButton
+                                        disabled
+                                        color="primary"
+                                        onClick={handleDecrementAdults(
+                                          'adults',
+                                          index
+                                        )}
+                                        sx={{ p: 0 }}
+                                      >
+                                        <RemoveCircleOutlineIcon
+                                          sx={{ p: 0 }}
+                                        />
+                                      </IconButton>
+                                    )}
+                                    <Typography
+                                      variant="body1"
+                                      textAlign="center"
+                                      sx={{ mx: 1 }}
+                                    >
+                                      {room.adults}
+                                    </Typography>
 
-                                <IconButton
-                                  color="primary"
-                                  onClick={handleIncrementKids}
+                                    <IconButton
+                                      color="primary"
+                                      onClick={handleIncrementAdults(
+                                        'adults',
+                                        index
+                                      )}
+                                      sx={{ p: 0 }}
+                                    >
+                                      <AddCircleOutlineIcon sx={{ p: 0 }} />
+                                    </IconButton>
+                                  </Box>
+                                </Grid>
+                                <Grid
+                                  item
+                                  xs={4}
+                                  sm={4}
+                                  md={4}
+                                  display="flex"
+                                  flexDirection="column"
+                                  alignItems="center"
+                                  justifyContent="center"
                                 >
-                                  <AddCircleOutlineIcon />
-                                </IconButton>
-                              </Box>
-                            </Grid>
+                                  <Typography variant="body1" fontWeight="bold">
+                                    Kids
+                                  </Typography>
+
+                                  <Box
+                                    display="flex"
+                                    alignItems="center"
+                                    justifyContent="center"
+                                    sx={{ py: '8px' }}
+                                  >
+                                    {room.kids > 0 ? (
+                                      <IconButton
+                                        color="primary"
+                                        onClick={handleDecrementAdults(
+                                          'kids',
+                                          index
+                                        )}
+                                        sx={{ p: 0 }}
+                                      >
+                                        <RemoveCircleOutlineIcon
+                                          sx={{ p: 0 }}
+                                        />
+                                      </IconButton>
+                                    ) : (
+                                      <IconButton
+                                        disabled
+                                        color="primary"
+                                        onClick={handleDecrementAdults(
+                                          'kids',
+                                          index
+                                        )}
+                                        sx={{ p: 0 }}
+                                      >
+                                        <RemoveCircleOutlineIcon
+                                          sx={{ p: 0 }}
+                                        />
+                                      </IconButton>
+                                    )}
+                                    <Typography
+                                      variant="body1"
+                                      textAlign="center"
+                                      sx={{ mx: 1 }}
+                                    >
+                                      {room.kids}
+                                    </Typography>
+
+                                    <IconButton
+                                      color="primary"
+                                      onClick={handleIncrementAdults(
+                                        'kids',
+                                        index
+                                      )}
+                                      sx={{ p: 0 }}
+                                    >
+                                      <AddCircleOutlineIcon sx={{ p: 0 }} />
+                                    </IconButton>
+                                  </Box>
+                                </Grid>
+                              </>
+                            ))}
                           </Grid>
                           <Divider orientation="horizontal" flexItem />
                           <Grid container>
@@ -318,7 +409,7 @@ export default function SearchRoom() {
                               alignItems="center"
                             >
                               <IconButton color="primary" sx={{ pl: 0 }}>
-                                <AddCircleOutlineIcon />
+                                <AddCircleOutlineIcon onClick={handleAddRoom} />
                               </IconButton>
                               <Button
                                 sx={{
@@ -330,7 +421,7 @@ export default function SearchRoom() {
                                   p: 0,
                                   fontWeight: 'bold',
                                 }}
-                                onClick={() => setRoom(room + 1)}
+                                onClick={handleAddRoom}
                               >
                                 Add Room
                               </Button>
@@ -353,59 +444,6 @@ export default function SearchRoom() {
                     </DialogContent>
                   </Dialog>
                   {/* END - OTHERS */}
-
-                  <Select
-                    value={inputSearch.room}
-                    name="room"
-                    onChange={(e) => {
-                      setInputSearch({
-                        ...inputSearch,
-                        [e.target.name]: e.target.value,
-                      });
-                    }}
-                    sx={{ mx: '10px' }}
-                  >
-                    <MenuItem value={'1 Room'}>1 Room</MenuItem>
-                    <MenuItem value={'2 Room'}>2 Room</MenuItem>
-                    <MenuItem value={'3 Room'}>3 Room</MenuItem>
-                  </Select>
-                  <Select
-                    value={inputSearch.adult}
-                    name="adult"
-                    onChange={(e) => {
-                      setInputSearch({
-                        ...inputSearch,
-                        [e.target.name]: e.target.value,
-                      });
-                    }}
-                    sx={{ mx: '10px' }}
-                  >
-                    <MenuItem value="">
-                      <em>None</em>
-                    </MenuItem>
-                    <MenuItem value={'1 Adult'}>1 Adult</MenuItem>
-                    <MenuItem value={'2 Adult'}>2 Adult</MenuItem>
-                    <MenuItem value={'3 Adult'}>3 Adult</MenuItem>
-                    <MenuItem value={'4 Adult'}>4 Adult</MenuItem>
-                    <MenuItem value={'5 Adult'}>5 Adult</MenuItem>
-                  </Select>
-                  <Select
-                    value={inputSearch.kids}
-                    name="kid"
-                    onChange={(e) => {
-                      setInputSearch({
-                        ...inputSearch,
-                        [e.target.name]: e.target.value,
-                      });
-                    }}
-                    sx={{ mx: '10px' }}
-                  >
-                    <MenuItem value={'1 Kid'}>1 Kid</MenuItem>
-                    <MenuItem value={'2 Kids'}>2 Kids</MenuItem>
-                    <MenuItem value={'3 Kids'}>3 Kids</MenuItem>
-                    <MenuItem value={'4 Kids'}>4 Kids</MenuItem>
-                    <MenuItem value={'5 Kids'}>5 Kids</MenuItem>
-                  </Select>
                 </Grid>
 
                 <Grid

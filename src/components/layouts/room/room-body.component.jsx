@@ -10,12 +10,25 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme, ThemeProvider, useTheme } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import { IconButton, List, ListItem, Modal } from '@mui/material';
+import {
+  Collapse,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Divider,
+  IconButton,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  useMediaQuery,
+} from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -32,6 +45,7 @@ import * as API from '../../../constants/api';
 import { toastAlertFail, toastAlertSuccess } from '../../../utils/helperFn';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import moment from 'moment';
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
 
 const imageSources = [
   'https://media-cdn.tripadvisor.com/media/photo-s/17/61/79/7f/pub-area.jpg',
@@ -43,6 +57,34 @@ const cards = [1, 2, 3, 4, 5, 6];
 
 const theme = createTheme();
 
+const iconAmenities = {
+  'Free parking':
+    'https://www.hilton.com/modules/assets/svgs/amenities/freeParking.svg',
+  'Free WiFi':
+    'https://www.hilton.com/modules/assets/svgs/amenities/freeWifi.svg',
+  'Non-smoking rooms':
+    'https://www.hilton.com/modules/assets/svgs/amenities/nonSmoking.svg',
+  Concierge:
+    'https://www.hilton.com/modules/assets/svgs/amenities/concierge.svg',
+  'Fitness center':
+    'https://www.hilton.com/modules/assets/svgs/amenities/fitnessCenter.svg',
+  'On-site restaurant':
+    'https://www.hilton.com/modules/assets/svgs/amenities/dining.svg',
+  'EV Charging':
+    'https://www.hilton.com/modules/assets/svgs/amenities/evCharging.svg',
+  'Executive lounge':
+    'https://www.hilton.com/modules/assets/svgs/amenities/executiveLounge.svg',
+  'Outdoor pool':
+    'https://www.hilton.com/modules/assets/svgs/amenities/outdoorPool.svg',
+  'Room service':
+    'https://www.hilton.com/modules/assets/svgs/amenities/roomService.svg',
+  'Business center':
+    'https://www.hilton.com/modules/assets/svgs/amenities/businessCenter.svg',
+  'Meeting rooms':
+    'https://www.hilton.com/modules/assets/svgs/amenities/meetingRooms.svg',
+  'Pet not allowed':
+    'https://www.hilton.com/modules/assets/svgs/amenities/petsNotAllowed.svg',
+};
 const styleModal = {
   position: 'absolute',
   top: '50%',
@@ -82,10 +124,6 @@ export default function RoomBody() {
   const [categoryId, setCategoryId] = useState(1); //chua dung tai sao k dc de default value null
   const [value, setValue] = React.useState();
   let [searchParams, setSearchParams] = useSearchParams();
-  console.log(
-    '🚀 ~ file: room-body.component.jsx ~ line 85 ~ RoomBody ~ searchParams',
-    searchParams
-  );
 
   // get all categories
   useEffect(() => {
@@ -131,8 +169,30 @@ export default function RoomBody() {
   }, []);
 
   // config default
+  const [open, setOpen] = React.useState(false);
+  console.log(
+    '🚀 ~ file: room-body.component.jsx ~ line 173 ~ RoomBody ~ open',
+    open
+  );
+  const [openAmenitiesModal, setOpenAmenitiesModal] = React.useState(false);
+  const [openDesModal, setOpenDesModal] = React.useState(false);
+  const handleDesModal = () => {
+    setOpenDesModal(!openDesModal);
+  };
+  const handleClickOpenAmenitiesModal = () => {
+    setOpenAmenitiesModal(!openAmenitiesModal);
+  };
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
   const [openModal, setOpenModal] = React.useState(false);
-  const handleCloseModal = () => setOpenModal(false);
 
   const handleOpenModal = (id) => {
     setOpenModal(true);
@@ -148,9 +208,9 @@ export default function RoomBody() {
     const searchInfo = {
       From: moment(new Date()).format('MM/DD/YYYY'),
       To: moment(new Date()).add(1, 'days').format('MM/DD/YYYY'),
-      room: '1 Room',
-      adult: '1 Adult',
-      kids: '1 Kid',
+      room: 1,
+      adults: 1,
+      kids: 1,
     };
     sessionStorage.setItem('searchInfo', JSON.stringify(searchInfo));
 
@@ -193,11 +253,10 @@ export default function RoomBody() {
           sx={{
             bgcolor: 'background.paper',
             pt: 8,
-            pb: 6,
           }}
         >
           {/* START - HEADER */}
-          <Container maxWidth="sm">
+          <Container maxWidth="xl">
             <Typography
               component="h1"
               variant="h2"
@@ -243,7 +302,6 @@ export default function RoomBody() {
                       <Grid item key={room.id} xs={12} sm={6} md={4}>
                         <Card
                           sx={{
-                            height: '100%',
                             display: 'flex',
                             flexDirection: 'column',
                           }}
@@ -314,210 +372,403 @@ export default function RoomBody() {
                               variant="outlined"
                               size="small"
                               sx={{ width: 200 }}
-                              onClick={() => handleOpenModal()}
+                              onClick={handleClickOpen}
                             >
                               View Details
                             </Button>
 
                             {/* START - MODAL */}
-
-                            <Modal
-                              open={openModal}
-                              onClose={handleCloseModal}
-                              aria-labelledby="modal-modal-title"
-                              aria-describedby="modal-modal-description"
-                              BackdropProps={{
-                                style: { backgroundColor: 'rgba(0,0,0,0.1)' },
-                              }}
+                            <Dialog
+                              fullScreen={fullScreen}
+                              maxWidth="xl"
+                              open={open}
+                              onClose={handleClose}
+                              aria-labelledby="responsive-dialog-title"
                             >
-                              <Box sx={styleModal}>
-                                <Grid container>
-                                  <Grid item xs={12} sm={12} md={12}>
-                                    <IconButton
-                                      aria-label="close"
-                                      onClick={handleCloseModal}
-                                      sx={{
-                                        position: 'absolute',
-                                        right: 8,
-                                        top: 8,
-                                        color: (theme) =>
-                                          theme.palette.grey[500],
-                                      }}
-                                    >
-                                      <CloseIcon />
-                                    </IconButton>
-                                  </Grid>
-                                  <Grid
-                                    item
-                                    xs={12}
-                                    sm={6}
-                                    md={6}
-                                    align="center"
-                                  >
-                                    <Typography
-                                      variant="h6"
-                                      sx={{
-                                        backgroundColor: '#f3f3f3',
-                                        color: 'black',
-                                      }}
-                                    >
-                                      KING GUEST ROOM OCEAN VIEW
-                                    </Typography>
-                                    <div className="swiper-container">
-                                      <Swiper
-                                        cssMode={true}
-                                        autoplay={{
-                                          delay: 3000,
-                                          disableOnInteraction: false,
-                                        }}
-                                        navigation={true}
-                                        pagination={true}
-                                        mousewheel={true}
-                                        keyboard={true}
-                                        modules={[
-                                          Navigation,
-                                          Pagination,
-                                          Mousewheel,
-                                          Keyboard,
-                                          Autoplay,
-                                        ]}
-                                        spaceBetween={0}
-                                        slidesPerView={1}
-                                        className="mySwiper"
-                                        breakpoints={{
-                                          1024: {
-                                            slidesPerView: 1,
-                                          },
-                                          768: {
-                                            slidesPerView: 1,
-                                          },
-                                        }}
+                              <DialogTitle id="responsive-dialog-title">
+                                <IconButton
+                                  aria-label="close"
+                                  onClick={handleClose}
+                                  sx={{
+                                    position: 'absolute',
+                                    right: 8,
+                                    top: 8,
+                                    color: (theme) => theme.palette.grey[500],
+                                  }}
+                                >
+                                  <CloseIcon />
+                                </IconButton>
+                              </DialogTitle>
+                              <DialogContent>
+                                <DialogContentText
+                                  sx={{ color: 'rgba(0,0,0,1)' }}
+                                >
+                                  <>
+                                    <Grid container>
+                                      <Grid
+                                        item
+                                        xs={12}
+                                        sm={12}
+                                        md={6}
+                                        align="center"
+                                        mt={2}
                                       >
-                                        {imageSources.map((imgSrc) => (
-                                          <SwiperSlide>
-                                            <div key={imgSrc}>
-                                              <img
-                                                src={imgSrc}
-                                                alt="img"
-                                                style={{
-                                                  width: '100%',
+                                        <Typography
+                                          variant="h5"
+                                          sx={{
+                                            backgroundColor: '#f3f3f3',
+                                            color: 'black',
+                                          }}
+                                          fontWeight="bold"
+                                        >
+                                          KING GUEST ROOM OCEAN VIEW
+                                        </Typography>
+                                        <div className="swiper-container">
+                                          <Swiper
+                                            cssMode={true}
+                                            autoplay={{
+                                              delay: 3000,
+                                              disableOnInteraction: false,
+                                            }}
+                                            navigation={true}
+                                            pagination={true}
+                                            mousewheel={true}
+                                            keyboard={true}
+                                            modules={[
+                                              Navigation,
+                                              Pagination,
+                                              Mousewheel,
+                                              Keyboard,
+                                              Autoplay,
+                                            ]}
+                                            spaceBetween={0}
+                                            slidesPerView={1}
+                                            className="mySwiper"
+                                            breakpoints={{
+                                              1024: {
+                                                slidesPerView: 1,
+                                              },
+                                              768: {
+                                                slidesPerView: 1,
+                                              },
+                                            }}
+                                          >
+                                            {imageSources.map((imgSrc) => (
+                                              <SwiperSlide>
+                                                <div key={imgSrc}>
+                                                  <img
+                                                    src={imgSrc}
+                                                    alt="img"
+                                                    style={{
+                                                      width: '100%',
+                                                    }}
+                                                    // sizes="(max-width: 300px) 300px, (max-width: 600px) 600px, (max-width: 900px) 900px, (max-width: 1200px) 1200px"
+                                                  />
+                                                </div>
+                                              </SwiperSlide>
+                                            ))}
+                                          </Swiper>
+                                        </div>
+                                        {openDesModal ? (
+                                          <Typography
+                                            variant="body1"
+                                            textAlign="left"
+                                            sx={{ my: 2 }}
+                                          >
+                                            Han River view, 43-inch HDTV, chaise
+                                            lounge, bathtub and shower
+                                            <br /> Located through 5th - 12th
+                                            floor, the guest rooms offer
+                                            beautiful views of Han River.
+                                            Comfortably appointed with the
+                                            Vietnamese-inspired décor, the guest
+                                            room features a king-sized bed.
+                                            <br /> Modern comforts include a
+                                            43-inch HDTV, a chaise lounge,
+                                            mini-bar, WiFi access (fees apply),
+                                            and a digital alarm clock. Elegantly
+                                            divided from the bedroom, the
+                                            bathroom features spacious and
+                                            creative designs including a rain
+                                            shower as well a free-standing
+                                            bathtub. Sleeps 2. <br />
+                                            An extra bed for a third guest may
+                                            be available for a fee and upon
+                                            request.{' '}
+                                            <Button
+                                              sx={{
+                                                border: 'none',
+                                                backgroundColor: 'white',
+                                                textDecoration: 'underline',
+                                                textTransform: 'none',
+                                                p: 0,
+                                              }}
+                                              onClick={() => handleDesModal()}
+                                            >
+                                              Read less
+                                            </Button>
+                                          </Typography>
+                                        ) : (
+                                          <Typography
+                                            variant="body1"
+                                            textAlign="left"
+                                            sx={{ my: 2 }}
+                                          >
+                                            Han River view, 43-inch HDTV, chaise
+                                            lounge, bathtub and shower <br />
+                                            Located through 5th - 12th floor,
+                                            the guest rooms offer beautiful
+                                            views of Han River. Comfortably ...
+                                            <Button
+                                              sx={{
+                                                border: 'none',
+                                                backgroundColor: 'white',
+                                                textDecoration: 'underline',
+                                                textTransform: 'none',
+                                                p: 0,
+                                              }}
+                                              onClick={() => handleDesModal()}
+                                            >
+                                              {' '}
+                                              Read more
+                                            </Button>
+                                          </Typography>
+                                        )}
+
+                                        <Button
+                                          variant="contained"
+                                          size="medium"
+                                          // onClick={() =>
+                                          //   handlePickRoom(
+                                          //     1,
+                                          //     'King Guest Room River View'
+                                          //   )
+                                          // }
+                                        >
+                                          Book Now
+                                        </Button>
+                                      </Grid>
+                                      <Grid item xs={12} sm={12} md={6}>
+                                        <Container>
+                                          <Typography variant="body1">
+                                            Hotel Amenities
+                                          </Typography>
+                                          <Divider sx={{ my: 2 }} />
+                                          <Typography>
+                                            <div className="swiper-container">
+                                              <Swiper
+                                                cssMode={true}
+                                                navigation={true}
+                                                keyboard={true}
+                                                modules={[
+                                                  Navigation,
+                                                  Pagination,
+                                                  Mousewheel,
+                                                  Keyboard,
+                                                ]}
+                                                spaceBetween={0}
+                                                slidesPerView={6}
+                                                className="mySwiper"
+                                                breakpoints={{
+                                                  1024: {
+                                                    slidesPerView: 6,
+                                                  },
+                                                  768: {
+                                                    slidesPerView: 5,
+                                                  },
                                                 }}
-                                                // sizes="(max-width: 300px) 300px, (max-width: 600px) 600px, (max-width: 900px) 900px, (max-width: 1200px) 1200px"
-                                              />
+                                              >
+                                                {Object.keys(iconAmenities).map(
+                                                  (key, index) => (
+                                                    <SwiperSlide>
+                                                      <div
+                                                        key={index}
+                                                        style={{
+                                                          display: 'flex',
+                                                          alignItems: 'center',
+                                                          justifyContent:
+                                                            'center',
+                                                        }}
+                                                      >
+                                                        <img
+                                                          src={
+                                                            iconAmenities[key]
+                                                          }
+                                                          alt="img"
+                                                          style={{
+                                                            width: '50%',
+                                                          }}
+                                                          // sizes="(max-width: 300px) 300px, (max-width: 600px) 600px, (max-width: 900px) 900px, (max-width: 1200px) 1200px"
+                                                        />
+                                                      </div>
+                                                      <Typography
+                                                        variant="body2"
+                                                        textAlign="center"
+                                                      >
+                                                        {key}
+                                                      </Typography>
+                                                    </SwiperSlide>
+                                                  )
+                                                )}
+                                              </Swiper>
                                             </div>
-                                          </SwiperSlide>
-                                        ))}
-                                      </Swiper>
-                                    </div>
-                                  </Grid>
-                                  <Grid
-                                    item
-                                    xs={12}
-                                    sm={6}
-                                    md={6}
-                                    sx={{ borderLeft: 0.5 }}
-                                  >
-                                    <Container>
-                                      <Typography>
-                                        <strong>Description:</strong>{' '}
-                                      </Typography>
-                                      {/* <Typography>
-                                    Han River view, 43-inch HDTV, chaise lounge,
-                                    bathtub and shower Located through 5th -
-                                    12th floor, the guest rooms offer beautiful
-                                    views of Han River. Comfortably appointed
-                                    with the Vietnamese-inspired décor, the
-                                    guest room features a king-sized bed. Modern
-                                    comforts include a 43-inch HDTV, a chaise
-                                    lounge, mini-bar, WiFi access (fees apply),
-                                    and a digital alarm clock. Elegantly divided
-                                    from the bedroom, the bathroom features
-                                    spacious and creative designs including a
-                                    rain shower as well a free-standing bathtub.
-                                    Sleeps 2. An extra bed for a third guest may
-                                    be available for a fee and upon request.
-                                    Check Rates
-                                  </Typography> */}
-                                      {
-                                        descriptions &&
-                                          descriptions.map((des) => {
-                                            <h1>{des}</h1>;
-                                          })
-                                        // <h1 variant="body2" color="text.secondary">
-                                        //   {des}
-                                        // </h1>;
-                                      }
-                                      <Typography>
-                                        <strong>Room Highlights</strong>{' '}
-                                      </Typography>
-                                      <List
-                                        sx={{
-                                          listStyleType: 'disc',
-                                          pl: 2,
-                                          '& .MuiListItem-root': {
-                                            display: 'list-item',
-                                          },
-                                        }}
-                                        // sx={{
-                                        //   padding: 0,
-                                        //   listStyleType: 'disc',
-                                        //   display: 'list-item',
-                                        // }}
-                                      >
-                                        <ListItem sx={{ padding: 0 }}>
-                                          Sleeps 3
-                                        </ListItem>
-                                        <ListItem sx={{ padding: 0 }}>
-                                          Separate bathtub
-                                        </ListItem>
-                                        <ListItem sx={{ padding: 0 }}>
-                                          Hairdryer
-                                        </ListItem>
-                                      </List>
-                                    </Container>
-                                    {/* {detailData && (
-                                  <Container>
-                                    <Typography
-                                      variant="h5"
-                                      sx={{ color: '#009688' }}
-                                    >
-                                      Detail product
-                                    </Typography>
-                                    <Typography>
-                                      <strong>Name:</strong>{' '}
-                                      {detailData.productDetail.name}
-                                    </Typography>
-                                    <Typography>
-                                      <strong>Price:</strong>{' '}
-                                      {detailData.productDetail.price}
-                                    </Typography>
-                                    <Typography>
-                                      <strong>Description:</strong>{' '}
-                                      {detailData.productDetail.description}
-                                    </Typography>
-                                    <Typography>
-                                      <strong>Remaining amount:</strong>{' '}
-                                      {detailData.productDetail.amount}
-                                    </Typography>
-                                    <Button
-                                      variant="contained"
-                                      onClick={addToCart}
-                                    >
-                                      Add
-                                    </Button>
-                                    <Button
-                                      variant="outlined"
-                                      color="error"
-                                      onClick={handleCloseModal}
-                                    >
-                                      Close
-                                    </Button>
-                                  </Container>
-                                )} */}
-                                  </Grid>
-                                </Grid>
-                              </Box>
-                            </Modal>
+                                          </Typography>
+                                          <Divider sx={{ my: 2 }} />
+                                          <Typography variant="body1">
+                                            Room Highlights
+                                          </Typography>
+                                          <List
+                                            sx={{
+                                              listStyleType: 'disc',
+                                              pl: 2,
+                                              '& .MuiListItem-root': {
+                                                display: 'list-item',
+                                              },
+                                            }}
+                                            // sx={{
+                                            //   padding: 0,
+                                            //   listStyleType: 'disc',
+                                            //   display: 'list-item',
+                                            // }}
+                                          >
+                                            <Grid container>
+                                              <Grid item xs={6}>
+                                                <ListItem sx={{ padding: 0 }}>
+                                                  Sleeps 3
+                                                </ListItem>
+                                                <ListItem sx={{ padding: 0 }}>
+                                                  Separate bathtub
+                                                </ListItem>
+                                                <ListItem sx={{ padding: 0 }}>
+                                                  Hairdryer
+                                                </ListItem>
+                                                <ListItem sx={{ padding: 0 }}>
+                                                  Iron
+                                                </ListItem>
+                                              </Grid>
+                                              <Grid item xs={6}>
+                                                <ListItem sx={{ padding: 0 }}>
+                                                  Bathroom amenities
+                                                </ListItem>
+                                                <ListItem sx={{ padding: 0 }}>
+                                                  Separate bathtub and shower
+                                                </ListItem>
+                                                <ListItem sx={{ padding: 0 }}>
+                                                  Hairdryer
+                                                </ListItem>
+                                              </Grid>
+                                            </Grid>
+                                          </List>
+                                        </Container>
+                                        <Container>
+                                          <List
+                                            sx={{
+                                              width: '100%',
+                                              maxWidth: '100%',
+                                              bgcolor: 'background.paper',
+                                            }}
+                                            component="nav"
+                                          >
+                                            <Divider sx={{ my: 1 }} />
+
+                                            <ListItemButton
+                                              onClick={
+                                                handleClickOpenAmenitiesModal
+                                              }
+                                            >
+                                              <ListItemText
+                                                primary={
+                                                  <Typography
+                                                    type="body1"
+                                                    sx={{
+                                                      color: '#104C97',
+                                                      fontWeight: 'bold',
+                                                    }}
+                                                  >
+                                                    See our full list of
+                                                    amenities
+                                                  </Typography>
+                                                }
+                                              />
+                                              {openAmenitiesModal ? (
+                                                <ExpandLess
+                                                  sx={{ color: '#104C97' }}
+                                                />
+                                              ) : (
+                                                <ExpandMore
+                                                  sx={{ color: '#104C97' }}
+                                                />
+                                              )}
+                                            </ListItemButton>
+                                            <Divider sx={{ my: 1 }} />
+
+                                            <Collapse
+                                              in={openAmenitiesModal}
+                                              timeout="auto"
+                                              unmountOnExit
+                                            >
+                                              <List
+                                                component="div"
+                                                disablePadding
+                                              >
+                                                <ListItemText sx={{ pl: 4 }}>
+                                                  <List
+                                                    sx={{
+                                                      listStyleType: 'disc',
+                                                      pl: 2,
+                                                      '& .MuiListItem-root': {
+                                                        display: 'list-item',
+                                                      },
+                                                    }}
+                                                  >
+                                                    <ListItem
+                                                      sx={{ padding: 0 }}
+                                                    >
+                                                      Sleeps 3
+                                                    </ListItem>
+                                                    <ListItem
+                                                      sx={{ padding: 0 }}
+                                                    >
+                                                      Separate bathtub
+                                                    </ListItem>
+                                                    <ListItem
+                                                      sx={{ padding: 0 }}
+                                                    >
+                                                      Hairdryer
+                                                    </ListItem>
+                                                    <ListItem
+                                                      sx={{ padding: 0 }}
+                                                    >
+                                                      Iron
+                                                    </ListItem>
+                                                    <ListItem
+                                                      sx={{ padding: 0 }}
+                                                    >
+                                                      Bathroom amenities
+                                                    </ListItem>
+                                                    <ListItem
+                                                      sx={{ padding: 0 }}
+                                                    >
+                                                      Separate bathtub and
+                                                      shower
+                                                    </ListItem>
+                                                    <ListItem
+                                                      sx={{ padding: 0 }}
+                                                    >
+                                                      Hairdryer
+                                                    </ListItem>
+                                                  </List>
+                                                </ListItemText>
+                                              </List>
+                                            </Collapse>
+                                          </List>
+                                        </Container>
+                                      </Grid>
+                                    </Grid>
+                                  </>
+                                </DialogContentText>
+                              </DialogContent>
+                            </Dialog>
 
                             {/* END - MODAL */}
                           </CardActions>

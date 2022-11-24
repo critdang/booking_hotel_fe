@@ -405,7 +405,7 @@ export default function Body() {
                             }
                             // onClick={() => setPickedRoom(room - 1)}
                           >
-                            Book Now
+                            Book Now !
                           </Button>
                         </CardActions>
 
@@ -419,7 +419,7 @@ export default function Body() {
                           <Button
                             variant="outlined"
                             fullWidth
-                            onClick={() => handleOpenModal()}
+                            onClick={handleClickOpen}
                           >
                             View Details
                           </Button>
@@ -797,98 +797,6 @@ export default function Body() {
                               </DialogContentText>
                             </DialogContent>
                           </Dialog>
-
-                          {/* END - MODAL */}
-                        </CardActions>
-                        <Typography variant="body2" align="center">
-                          <span style={{ fontWeight: 'bold' }}>Plus 5.00%</span>{' '}
-                          service charge per stay, plus tax
-                        </Typography>
-                      </Card>
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={6}>
-                      <Card
-                        sx={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                        }}
-                      >
-                        <CardMedia
-                          component="img"
-                          image="https://www.hilton.com/im/en/DADDVHI/9210522/daddv-guest-room-river-view-twin-bed.jpg?impolicy=crop&cw=5390&ch=3063&gravity=NorthWest&xposition=0&yposition=165&rw=760&rh=432"
-                          alt="random"
-                        />
-                        <CardContent sx={{ flexGrow: 1 }}>
-                          <Typography
-                            gutterBottom
-                            variant="h6"
-                            textAlign="center"
-                          >
-                            King Guest Room River View
-                          </Typography>
-                        </CardContent>
-                        <CardActions
-                          sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        >
-                          <Button
-                            variant="contained"
-                            fullWidth
-                            // onClick={onClick('increase')}
-                            onClick={() =>
-                              handlePickRoom(1, 'Queen Guest Room River View')
-                            }
-                          >
-                            Book Now
-                          </Button>
-                        </CardActions>
-
-                        <CardActions
-                          sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        >
-                          <Button
-                            variant="outlined"
-                            fullWidth
-                            // onClick={() => handleOpenModal()}
-                            onClick={handleClickOpen}
-                          >
-                            View Details
-                          </Button>
-
-                          {/* START - MODAL */}
-
-                          {/* <Dialog
-                            fullScreen={fullScreen}
-                            open={open}
-                            onClose={handleClose}
-                            aria-labelledby="responsive-dialog-title"
-                          >
-                            <DialogTitle id="responsive-dialog-title">
-                              {"Use Google's location service?"}
-                            </DialogTitle>
-                            <DialogContent>
-                              <DialogContentText>
-                                Let Google help apps determine location. This
-                                means sending anonymous location data to Google,
-                                even when no apps are running.
-                              </DialogContentText>
-                            </DialogContent>
-                            <DialogActions>
-                              <Button autoFocus onClick={handleClose}>
-                                Disagree
-                              </Button>
-                              <Button onClick={handleClose} autoFocus>
-                                Agree
-                              </Button>
-                            </DialogActions>
-                          </Dialog> */}
 
                           {/* END - MODAL */}
                         </CardActions>

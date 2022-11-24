@@ -33,6 +33,8 @@ import { Controller, useForm } from 'react-hook-form';
 import { useState, useEffect } from 'react';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import * as API from '../../../constants/api';
+
 import {
   FaAward,
   FaCcMastercard,
@@ -45,7 +47,7 @@ import { styled } from '@mui/material/styles';
 import '../../../assets/css/payment/payment.css';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import * as API from '../../../constants/api';
+import { toastAlertFail, toastAlertSuccess } from '../../../utils/helperFn';
 
 const initialState = {
   From: moment(new Date()).format('MM/DD/YYYY'),
@@ -124,7 +126,10 @@ export default function Body(props) {
   const searchInfo = {
     From: search.From,
     To: search.To,
+    rooms: search.room,
+    guests: search.adults + search.kids,
   };
+
   // [END - GET SEARCH PARAMS]
 
   // Start config
@@ -137,9 +142,10 @@ export default function Body(props) {
     setOpen(false);
   };
   const [openEdit, setOpenEdit] = React.useState(false);
+  const TOKEN = JSON.parse(localStorage.getItem('token'));
 
-  // End config
   const navigate = useNavigate();
+  // End config
 
   // Start config responsive
   const theme = useTheme();
@@ -193,24 +199,46 @@ export default function Body(props) {
     errors
   );
 
-  const submitOrder = (data) => {
+  const submitOrder = (rawData) => {
+    const searchInfo = JSON.parse(sessionStorage.getItem('searchInfo'));
     const payment = {
-      cardName: data.cardName,
-      cardNumber: data.cardNumber,
-      expiryDate: data.expiryDate,
-      cardCVV: data.cardCVV,
+      cardName: rawData.cardName,
+      cardNumber: rawData.cardNumber,
+      expiryDate: rawData.expiryDate,
+      cardCVV: rawData.cardCVV,
       paymentMethod: paymentMethod,
     };
     const guestInfo = JSON.parse(sessionStorage.getItem('guestInfo'));
-    const result = {
+    const data = {
       payment,
       rooms,
       guestInfo,
+      searchInfo,
     };
-    console.log(
-      '🚀 ~ file: body.component.jsx ~ line 155 ~ submitOrder ~ result',
-      result
-    );
+    axios({
+      method: 'POST',
+      url: API.CREATE_ORDER,
+      data,
+      headers: { authorization: `Bearer ${TOKEN}` },
+    })
+      .then((res) => {
+        if (res.data.success) {
+          // potential call 2 times in deveplopment because of React.StrictMode
+          toastAlertSuccess(res.data.message);
+          return setTimeout(() => navigate('/'), 3000);
+        }
+      })
+      .catch((error) => {
+        if (error) {
+          if (
+            error.response.data.message ===
+            'Your token is expired. Please login again'
+          ) {
+            navigate('/login');
+          }
+          return toastAlertFail(error.response.data.message);
+        }
+      });
     // window.scrollTo(0, 0);
   };
 
@@ -480,7 +508,7 @@ export default function Body(props) {
                                 variant="body2"
                                 className="title_paragraph"
                               >
-                                {room.From} - {room.To}
+                                {searchInfo.From} - {searchInfo.To}
                               </Typography>
                             </Grid>
                             <Grid item xs={6} sm={6} md={6} textAlign="right">
@@ -1034,6 +1062,7 @@ export default function Body(props) {
                         </Button>
                       </Typography>
                     </Box>
+                    <ToastContainer />
                     <Button
                       type="submit"
                       size="large"
@@ -1094,7 +1123,7 @@ export default function Body(props) {
                           </Grid>
                           <Grid item xs={6} sm={6} md={6}>
                             <Typography variant="body2" gutterBottom>
-                              Saturday, 19 November 2022 (From 14:00)
+                              {searchInfo.From} (From 14:00)
                             </Typography>
                           </Grid>
                           <Grid item xs={6} sm={6} md={6}>
@@ -1108,7 +1137,7 @@ export default function Body(props) {
                           </Grid>
                           <Grid item xs={6} sm={6} md={6}>
                             <Typography variant="body2" gutterBottom>
-                              Saturday, 19 November 2022 (Before 12:00)
+                              {searchInfo.To} (Before 12:00)
                             </Typography>
                           </Grid>
                           <Grid item xs={6} sm={6} md={6}>
@@ -1136,7 +1165,9 @@ export default function Body(props) {
                           </Grid>
                           <Grid item xs={6} sm={6} md={6}>
                             <Typography variant="body2" gutterBottom>
-                              1 Room
+                              {searchInfo.rooms > 1
+                                ? `${searchInfo.rooms} Rooms`
+                                : `${searchInfo.rooms} Room`}
                             </Typography>
                           </Grid>
                           <Grid item xs={6} sm={6} md={6}>
@@ -1145,12 +1176,14 @@ export default function Body(props) {
                               gutterBottom
                               className="title_paragraph"
                             >
-                              Guests per room
+                              Total guests
                             </Typography>
                           </Grid>
                           <Grid item xs={6} sm={6} md={6}>
                             <Typography variant="body2" gutterBottom>
-                              4 Guests
+                              {searchInfo.guests > 1
+                                ? `${searchInfo.guests}  Guests`
+                                : `${searchInfo.guests}  Guest`}
                             </Typography>
                           </Grid>
                         </Grid>
