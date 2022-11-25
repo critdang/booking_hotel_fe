@@ -208,9 +208,8 @@ export default function RoomBody() {
     const searchInfo = {
       From: moment(new Date()).format('MM/DD/YYYY'),
       To: moment(new Date()).add(1, 'days').format('MM/DD/YYYY'),
-      room: 1,
       adults: 1,
-      kids: 1,
+      kids: 0,
     };
     sessionStorage.setItem('searchInfo', JSON.stringify(searchInfo));
 
