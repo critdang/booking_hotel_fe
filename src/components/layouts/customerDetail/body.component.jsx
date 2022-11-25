@@ -126,7 +126,7 @@ export default function Body() {
                           <Controller
                             control={control}
                             name="fullName"
-                            defaultValue={userInfo.fullName}
+                            defaultValue={userInfo ? userInfo.fullName : null}
                             render={({ field }) => (
                               <TextField
                                 margin="normal"
@@ -155,7 +155,7 @@ export default function Body() {
                           <Controller
                             control={control}
                             name="email"
-                            defaultValue={userInfo.email}
+                            defaultValue={userInfo ? userInfo.email : null}
                             render={({ field }) => (
                               <TextField
                                 margin="normal"
@@ -187,7 +187,7 @@ export default function Body() {
                           <Controller
                             control={control}
                             name="phone"
-                            defaultValue={userInfo.phone}
+                            defaultValue={userInfo ? userInfo.phone : ''}
                             render={({ field }) => (
                               <TextField
                                 margin="normal"
@@ -215,7 +215,7 @@ export default function Body() {
                           <Controller
                             control={control}
                             name="address"
-                            defaultValue={userInfo.address}
+                            defaultValue={userInfo ? userInfo.address : null}
                             render={({ field }) => (
                               <TextField
                                 margin="normal"
@@ -336,7 +336,7 @@ export default function Body() {
                           <Controller
                             control={control}
                             name="gender"
-                            defaultValue={userInfo.gender}
+                            defaultValue={userInfo ? userInfo.gender : 'male'}
                             render={({ field }) => (
                               <RadioGroup
                                 style={{

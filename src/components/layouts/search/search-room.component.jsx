@@ -69,6 +69,7 @@ export default function SearchRoom() {
 
   // [START - CONFIG SEARCH ROOM]
   const [rooms, setRooms] = useState(initialRoom);
+
   const showSearch = {
     rooms: rooms.length,
     guests: rooms.reduce((acc, cur) => acc + cur.adults + cur.kids, 0),
@@ -89,16 +90,10 @@ export default function SearchRoom() {
     from: defaultFrom,
     to: defaultTo,
   };
-  console.log(
-    '🚀 ~ file: search-room.component.jsx ~ line 92 ~ SearchRoom ~ defaultTo',
-    defaultTo
-  );
-  const [selectedDayRange, setSelectedDayRange] = useState(defaultValue);
-  console.log(
-    '🚀 ~ file: search-room.component.jsx ~ line 93 ~ SearchRoom ~ selectedDayRange',
-    selectedDayRange
-  );
 
+  const [selectedDayRange, setSelectedDayRange] = useState(defaultValue);
+
+  const nextDay = selectedDayRange.from.day + 1;
   const [openCalendar, setOpenCalendar] = useState(false);
 
   const handleClickOpenCalendar = () => {
@@ -146,11 +141,39 @@ export default function SearchRoom() {
 
   const [inputSearch, setInputSearch] = React.useState(initialState);
   const submitSearch = (e) => {
-    setSearchParams(inputSearch);
-    sessionStorage.setItem('searchInfo', JSON.stringify(inputSearch));
+    const From = moment(selectedDayRange.from).format('MM-DD-YYYY');
+
+    const To = moment(selectedDayRange.to).format('MM-DD-YYYY');
+
+    var rawAdults = [];
+    var rawKids = [];
+    const test = rooms.map((item) => {
+      for (var key in item) {
+        if (item.hasOwnProperty(key)) {
+          if (key == 'adults') {
+            rawAdults.push(item[key]);
+          }
+          if (key == 'kids') {
+            rawKids.push(item[key]);
+          }
+        }
+      }
+    });
+    const adults = rawAdults.join(',');
+    const kids = rawKids.join(',');
+
+    const searchInfo = {
+      From,
+      To,
+      adults,
+      kids,
+    };
+    sessionStorage.setItem('searchInfo', JSON.stringify(searchInfo));
+    setSearchParams(searchInfo);
+
     navigate({
       pathname: '/book/reservation/rooms',
-      search: `?From=${inputSearch.From}&To=${inputSearch.To}&room=${inputSearch.room}&adult=${inputSearch.adult}&kids=${inputSearch.kids}`,
+      search: `?arrival=${From}&departure=${To}&adults=${adults}&kids=${kids}`,
     });
   };
 
@@ -200,7 +223,9 @@ export default function SearchRoom() {
                           variant="h3"
                           sx={{ mr: 1, fontWeight: 600 }}
                         >
-                          {selectedDayRange.from.day}
+                          {selectedDayRange.from == null
+                            ? dayjs().date()
+                            : selectedDayRange.from.day}
                         </Typography>
                       </Grid>
                       <Grid item xs={3} sm={3} md={3}>
@@ -221,7 +246,9 @@ export default function SearchRoom() {
                           variant="h3"
                           sx={{ mr: 1, fontWeight: 600 }}
                         >
-                          {selectedDayRange.to.day}
+                          {selectedDayRange.to == null
+                            ? nextDay
+                            : selectedDayRange.to.day}
                         </Typography>
                       </Grid>
                       <Grid item xs={3} sm={3} md={3}>
