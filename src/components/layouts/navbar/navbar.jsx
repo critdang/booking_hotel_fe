@@ -12,7 +12,6 @@ import {
   Tooltip,
 } from '@mui/material';
 import { Container } from '@mui/system';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import styled from '@emotion/styled';
 import { Link, useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
@@ -208,13 +207,31 @@ export default function HeaderHome() {
                 </Link> */}
               {/* </MenuItem> */}
               <MenuItem onClick={handleCloseNavMenu}>
-                <Link
-                  to="/login"
-                  style={{ textDecoration: 'none', color: 'black' }}
-                >
-                  <Button sx={{ color: 'black' }}>Login</Button>
-                </Link>
+                {signed ? (
+                  <Button
+                    sx={{ color: 'black', textDecoration: 'none' }}
+                    onClick={logout}
+                  >
+                    Logout
+                  </Button>
+                ) : (
+                  <Link to="/login" style={{ textDecoration: 'none' }}>
+                    <Button sx={{ color: 'black' }}>Login</Button>
+                  </Link>
+                )}
               </MenuItem>
+              {signed && (
+                <MenuItem onClick={handleCloseNavMenu}>
+                  <Button onClick={handleCloseMenu} sx={{ color: 'black' }}>
+                    <Link
+                      to="/profile"
+                      style={{ textDecoration: 'none', color: 'black' }}
+                    >
+                      Profile
+                    </Link>
+                  </Button>
+                </MenuItem>
+              )}
               <MenuItem onClick={handleCloseNavMenu}>
                 <Grid container>
                   <Grid xs={6} sm={6} md={6} item>

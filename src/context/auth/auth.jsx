@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import * as API from '../../constants/api';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { toastAlertFail } from '../../utils/helperFn';
 
 const AuthContext = createContext();

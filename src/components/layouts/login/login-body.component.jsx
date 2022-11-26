@@ -50,8 +50,24 @@ export default function LoginBody() {
     resolver: yupResolver(schema),
   });
   const submitLogin = async (data) => {
-    const result = await Login(data);
-    navigate('/');
+    try {
+      const res = await Login(data);
+      console.log(
+        '🚀 ~ file: login-body.component.jsx ~ line 55 ~ submitLogin ~ res',
+        res
+      );
+      navigate('/');
+    } catch (error) {
+      if (error) {
+        console.log(
+          '🚀 ~ file: login-body.component.jsx ~ line 60 ~ submitLogin ~ error',
+          error
+        );
+        // toastAlertFail(error.response.data.message);
+        return error;
+      }
+    }
+    // await Login(data);
   };
 
   return (
