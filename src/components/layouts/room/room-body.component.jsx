@@ -42,7 +42,7 @@ import { Navigation, Pagination, Mousewheel, Keyboard, Autoplay } from 'swiper';
 import { useCart } from '../../../context/cart/cart.provider';
 import axios from 'axios';
 import * as API from '../../../constants/api';
-import { toastAlertFail, toastAlertSuccess } from '../../../utils/helperFn';
+import { toastAlertFail } from '../../../utils/helperFn';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import moment from 'moment';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
@@ -53,9 +53,6 @@ const imageSources = [
   'https://media-cdn.tripadvisor.com/media/photo-m/1280/15/06/3b/38/group-table.jpg',
   'https://media-cdn.tripadvisor.com/media/photo-m/1280/17/61/79/25/for-domestic-and-foreign.jpg',
 ];
-const cards = [1, 2, 3, 4, 5, 6];
-
-const theme = createTheme();
 
 const iconAmenities = {
   'Free parking':
@@ -127,10 +124,6 @@ export default function RoomBody() {
 
   // get all categories
   useEffect(() => {
-    console.log(
-      '🚀 ~ file: room-body.component.jsx ~ line 83 ~ useEffect ~ API.GET_CATEGORY',
-      API.GET_CATEGORY
-    );
     axios
       .get(API.GET_CATEGORY)
       .then((res) => {
@@ -170,10 +163,6 @@ export default function RoomBody() {
 
   // config default
   const [open, setOpen] = React.useState(false);
-  console.log(
-    '🚀 ~ file: room-body.component.jsx ~ line 173 ~ RoomBody ~ open',
-    open
-  );
   const [openAmenitiesModal, setOpenAmenitiesModal] = React.useState(false);
   const [openDesModal, setOpenDesModal] = React.useState(false);
   const handleDesModal = () => {
@@ -251,7 +240,7 @@ export default function RoomBody() {
         <Box
           sx={{
             bgcolor: 'background.paper',
-            pt: 8,
+            pt: 2,
           }}
         >
           {/* START - HEADER */}
@@ -268,7 +257,7 @@ export default function RoomBody() {
           </Container>
           {/* END - HEADER */}
         </Box>
-        <Container sx={{ py: 8 }} maxWidth="lg">
+        <Container sx={{ py: 5 }} maxWidth="lg">
           <TabContext value={value}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
               <TabList
@@ -292,6 +281,7 @@ export default function RoomBody() {
             {category &&
               category.map((item) => (
                 <TabPanel
+                  key={item.id}
                   value={item.id}
                   sx={{ padding: '0', marginTop: '20px' }}
                 >

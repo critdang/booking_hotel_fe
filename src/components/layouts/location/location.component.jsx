@@ -77,31 +77,20 @@ export default function Location() {
           </Container>
         </Box>
         <Container sx={{ py: 0 }} maxWidth="md">
-          {/* End hero unit */}
-          <Grid container spacing={4}>
-            <Grid
-              xs={12}
+          <Box className="googlemap">
+            <iframe
+              className="google-iframe"
+              title="map"
+              src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d479.18210575958375!2d108.22578482283623!3d16.093651340736436!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x314219547c3cbd83%3A0x14a3480233f100db!2z7ZWc7Jqw66asIEhhbm9vcmk!5e0!3m2!1svi!2shk!4v1666870288468!5m2!1svi!2shk"
+              frameBorder="0"
               style={{
-                display: 'flex',
-                justifyContent: 'center',
+                border: 0,
               }}
-            >
-              <Box>
-                <iframe
-                  title="map"
-                  src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d479.18210575958375!2d108.22578482283623!3d16.093651340736436!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x314219547c3cbd83%3A0x14a3480233f100db!2z7ZWc7Jqw66asIEhhbm9vcmk!5e0!3m2!1svi!2shk!4v1666870288468!5m2!1svi!2shk"
-                  width="600"
-                  height="450"
-                  style={{
-                    border: 0,
-                  }}
-                  allowfullscreen=""
-                  loading="lazy"
-                  referrerpolicy="no-referrer-when-downgrade"
-                ></iframe>
-              </Box>
-            </Grid>
-          </Grid>
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </Box>
         </Container>
         <Box m={7}>
           <Container maxWidth="md">

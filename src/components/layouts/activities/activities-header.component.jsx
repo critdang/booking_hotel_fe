@@ -20,8 +20,8 @@ export default function ActivitiesHeader() {
         <Box
           sx={{
             bgcolor: 'background.paper',
-            pt: 8,
-            pb: 6,
+            pt: 5,
+            pb: 5,
           }}
         >
           <Container maxWidth="sm">
