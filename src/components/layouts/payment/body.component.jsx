@@ -1068,7 +1068,6 @@ export default function Body(props) {
                       size="large"
                       variant="contained"
                       sx={{ mt: 3, mb: 2 }}
-                      onClick={submitOrder}
                     >
                       Book Reservation
                     </Button>
