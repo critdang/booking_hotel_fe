@@ -125,10 +125,7 @@ export default function Body() {
   let [cursorRoom, setCursorRoom] = useState(0);
   const [rooms, setRooms] = useState();
   const [pickedRoom, setPickedRoom] = useState([]);
-  console.log(
-    '🚀 ~ file: body.component.jsx ~ line 210 ~ Body ~ pickedRoom',
-    pickedRoom
-  );
+
   useEffect(() => {
     axios({
       method: 'GET',
@@ -221,35 +218,12 @@ export default function Body() {
   }, [pickedRoom]);
   const handlePickRoom = (id, name, price) => {
     setCursorRoom(cursorRoom + 1);
-    // if (isLastStep()) {
-    //   setPickedRoom((element) => [
-    //     ...element,
-    //     {
-    //       id,
-    //       name,
-    //       price,
-    //     },
-    //   ]);
-    //   console.log(
-    //     '🚀 ~ file: body.component.jsx ~ line 219999 ~ Body ~ pickedRoom',
-    //     pickedRoom
-    //   );
-
-    //   toastAlertSuccess('Room has been picked');
-    //   console.log('herrrrrrrrrrrrrrrrre');
-    //   return setTimeout(() => navigate('/book/reservation'));
-    // }
-    console.log('aaaaaaaaaaaaaaaaaaaaaas');
-    console.log(
-      '🚀 ~ file: body.component.jsx ~ line 242 ~ handlePickRoom ~ pickedRoom',
-      pickedRoom
-    );
     sessionStorage.setItem('rooms', JSON.stringify(pickedRoom));
 
     setPickedRoom((element) => [
       ...element,
       {
-        id,
+        roomId: id,
         name,
         price,
       },

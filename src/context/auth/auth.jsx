@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import * as API from '../../constants/api';
-import { Navigate, useNavigate } from 'react-router-dom';
 import { toastAlertFail } from '../../utils/helperFn';
 
 const AuthContext = createContext();
@@ -26,7 +25,8 @@ export const AuthProvider = ({ children }) => {
 
   const Login = async (data) => {
     axios
-      .post(API.LOGIN, data)
+      .post(API.LOGIN, data, { withCredentials: true })
+
       .then((res) => {
         console.log('🚀 ~ file: auth.jsx ~ line 31 ~ .then ~ res', res);
         if (res.data.success) {

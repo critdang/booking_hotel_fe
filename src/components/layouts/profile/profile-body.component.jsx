@@ -6,10 +6,8 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
 import { ToastContainer } from 'react-toastify';
-import helperFn from '../../../utils/helperFn';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -44,10 +42,6 @@ export default function RequestReset() {
   const [selectedFile, setSelectedFile] = useState();
   const [confirmPassword, setConfirmPassword] = React.useState();
 
-  // useEffect(() => {
-  //   console.log(111111111);
-  //   setUserInfo(dataUser);
-  // }, [dataUser]);
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
@@ -85,14 +79,12 @@ export default function RequestReset() {
     resolver: yupResolver(schema),
   });
   const submitProfile = (data) => {
-    if (confirmPassword.confirmPassword !== data.password) {
-      return toastAlertFail('Passwords must match');
-    }
     axios({
       method: 'put',
       url: API.EDIT_PROFILE,
       data,
       headers: { authorization: `Bearer ${TOKEN}` },
+      withCredentials: true,
     })
       .then((res) => {
         if (res.data.success) {
@@ -343,7 +335,7 @@ export default function RequestReset() {
                         </Typography>
                       </Grid>
 
-                      <Grid item xs={12} sm={6}>
+                      {/* <Grid item xs={12} sm={6}>
                         <InputLabel htmlFor="standard-adornment-password">
                           Password
                         </InputLabel>
@@ -376,7 +368,7 @@ export default function RequestReset() {
                             />
                           )}
                         />
-                      </Grid>
+                      </Grid> */}
                       <Grid item xs={12} sm={6}>
                         <InputLabel htmlFor="standard-adornment-password">
                           Confirm Password
