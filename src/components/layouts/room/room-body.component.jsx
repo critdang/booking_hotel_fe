@@ -297,7 +297,7 @@ export default function RoomBody() {
                         >
                           <CardMedia
                             component="img"
-                            image="https://source.unsplash.com/random"
+                            image="https://the-secret-garden-da-nang.hotelmix.vn/data/Photos/r1536x531/9697/969780/969780292/The-Secret-Garden-Hostel-Da-Nang-Exterior.JPEG"
                             alt="random"
                           />
                           <CardContent sx={{ flexGrow: 1 }}>

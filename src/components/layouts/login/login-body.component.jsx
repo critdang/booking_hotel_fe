@@ -82,7 +82,7 @@ export default function LoginBody() {
             md={7}
             sx={{
               backgroundImage:
-                'url(https://static.zara.net/photos///2022/I/T/2/p/0857/431/712/2/w/1247/0857431712_15_1_1.jpg?ts=1658928471883)',
+                'url(https://t-cf.bstatic.com/xdata/images/hotel/max1280x900/163855063.jpg?k=1fa29823186d1d95046430c0737ed3a2625a3506a52c9a8d81053606b4809ce6&o=&hp=1)',
               backgroundRepeat: 'no-repeat',
               backgroundColor: (t) =>
                 t.palette.mode === 'light'

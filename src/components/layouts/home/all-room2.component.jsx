@@ -16,7 +16,7 @@ import room3 from '../../../assets/img/room3.jpg';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
 
-const cards = [1];
+const cards = [1, 2, 3, 4];
 const theme = createTheme();
 export default function AllRoom2() {
   const [isHover, setIsHover] = React.useState(false);
@@ -92,57 +92,9 @@ export default function AllRoom2() {
           <Container sx={{ py: 3 }} maxWidth="lg">
             {/* End hero unit */}
             <Grid container spacing={4}>
-              {cards.map((card) => (
+              {cards.map((card, index) => (
                 <>
-                  <Grid item key={card} xs={12} sm={6} md={3}>
-                    <a href="/">
-                      <div>
-                        <div style={{ position: 'relative' }}>
-                          <img
-                            src="https://static.wixstatic.com/media/94e66f_22b4e27ff3a0452a8207d9fbb1a93bbd~mv2_d_4272_2848_s_4_2.jpeg/v1/fill/w_454,h_450,al_c,q_80,usm_0.66_1.00_0.01/94e66f_22b4e27ff3a0452a8207d9fbb1a93bbd~mv2_d_4272_2848_s_4_2.webp"
-                            width="100%"
-                            onMouseEnter={handleMouseEnter}
-                            onMouseLeave={handleMouseLeave}
-                            style={styleBox}
-                          />
-                          <div style={styleText}>Your text</div>
-                        </div>
-                      </div>
-                    </a>
-                  </Grid>
-                  <Grid item key={card} xs={12} sm={6} md={3}>
-                    <a href="/">
-                      <div>
-                        <div style={{ position: 'relative' }}>
-                          <img
-                            src="https://static.wixstatic.com/media/94e66f_22b4e27ff3a0452a8207d9fbb1a93bbd~mv2_d_4272_2848_s_4_2.jpeg/v1/fill/w_454,h_450,al_c,q_80,usm_0.66_1.00_0.01/94e66f_22b4e27ff3a0452a8207d9fbb1a93bbd~mv2_d_4272_2848_s_4_2.webp"
-                            width="100%"
-                            onMouseEnter={handleMouseEnter}
-                            onMouseLeave={handleMouseLeave}
-                            style={styleBox}
-                          />
-                          <div style={styleText}>Your text</div>
-                        </div>
-                      </div>
-                    </a>
-                  </Grid>
-                  <Grid item key={card} xs={12} sm={6} md={3}>
-                    <a href="/">
-                      <div>
-                        <div style={{ position: 'relative' }}>
-                          <img
-                            src="https://static.wixstatic.com/media/94e66f_22b4e27ff3a0452a8207d9fbb1a93bbd~mv2_d_4272_2848_s_4_2.jpeg/v1/fill/w_454,h_450,al_c,q_80,usm_0.66_1.00_0.01/94e66f_22b4e27ff3a0452a8207d9fbb1a93bbd~mv2_d_4272_2848_s_4_2.webp"
-                            width="100%"
-                            onMouseEnter={handleMouseEnter}
-                            onMouseLeave={handleMouseLeave}
-                            style={styleBox}
-                          />
-                          <div style={styleText}>Your text</div>
-                        </div>
-                      </div>
-                    </a>
-                  </Grid>
-                  <Grid item key={card} xs={12} sm={6} md={3}>
+                  <Grid item key={index} xs={12} sm={6} md={3}>
                     <a href="/">
                       <div>
                         <div style={{ position: 'relative' }}>
