@@ -13,8 +13,8 @@ import { Navigation, Pagination, Mousewheel, Keyboard, Autoplay } from 'swiper';
 import Container from '@mui/material/Container';
 
 const imageSources = [
-  'https://media-cdn.tripadvisor.com/media/photo-s/17/61/79/7f/pub-area.jpg',
-  'https://media-cdn.tripadvisor.com/media/photo-m/1280/15/06/b9/7c/overview.jpg',
+  'https://media-cdn.tripadvisor.com/media/photo-m/1280/17/61/79/7f/pub-area.jpg',
+  'https://media-cdn.tripadvisor.com/media/photo-m/1280/14/8d/26/26/getlstd-property-photo.jpg',
   'https://media-cdn.tripadvisor.com/media/photo-m/1280/15/06/3b/38/group-table.jpg',
   'https://media-cdn.tripadvisor.com/media/photo-m/1280/17/61/79/25/for-domestic-and-foreign.jpg',
 ];

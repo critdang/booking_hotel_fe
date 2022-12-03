@@ -89,7 +89,7 @@ export default function AllRoom2() {
               </Link>
             </Stack>
           </Container>
-          <Container sx={{ py: 3 }} maxWidth="lg">
+          <Container sx={{ py: 3 }} maxWidth="xl">
             {/* End hero unit */}
             <Grid container spacing={4}>
               {cards.map((card, index) => (
@@ -99,7 +99,7 @@ export default function AllRoom2() {
                       <div>
                         <div style={{ position: 'relative' }}>
                           <img
-                            src="https://static.wixstatic.com/media/94e66f_22b4e27ff3a0452a8207d9fbb1a93bbd~mv2_d_4272_2848_s_4_2.jpeg/v1/fill/w_454,h_450,al_c,q_80,usm_0.66_1.00_0.01/94e66f_22b4e27ff3a0452a8207d9fbb1a93bbd~mv2_d_4272_2848_s_4_2.webp"
+                            src="https://t-cf.bstatic.com/xdata/images/hotel/max1280x900/213801629.jpg?k=572257cc4fc5062868248e9d125bfa6436d0c6e27114d9bea87cc842bb3b9cb2&o=&hp=1"
                             width="100%"
                             onMouseEnter={handleMouseEnter}
                             onMouseLeave={handleMouseLeave}
