@@ -221,6 +221,10 @@ export default function RoomBody() {
     axios
       .get(`${API.GET_ROOM_BY_CATEGORY}/${categoryId}`)
       .then((res) => {
+        console.log(
+          '🚀 ~ file: room-body.component.jsx:224 ~ .then ~ res:',
+          res
+        );
         if (res.data.success) {
           setRooms(res.data.message.rooms);
         }
