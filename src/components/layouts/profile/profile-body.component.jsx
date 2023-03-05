@@ -34,7 +34,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 const theme = createTheme();
 
-export default function RequestReset() {
+export default function RequestReset({ setLoading }) {
   const TOKEN = localStorage.getItem('token');
 
   const dataUser = JSON.parse(localStorage.getItem('userInfo'));
@@ -79,6 +79,7 @@ export default function RequestReset() {
     resolver: yupResolver(schema),
   });
   const submitProfile = (data) => {
+    setLoading(true);
     axios({
       method: 'put',
       url: API.EDIT_PROFILE,
@@ -87,6 +88,7 @@ export default function RequestReset() {
       withCredentials: true,
     })
       .then((res) => {
+        setLoading(false);
         if (res.data.success) {
           toastAlertSuccess(res.data.message);
         }

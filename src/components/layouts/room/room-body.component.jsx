@@ -109,7 +109,7 @@ const initialState = {
   room: '1 Room',
   numberOfGuests: '1 Adult',
 };
-export default function RoomBody() {
+export default function RoomBody({ setLoading }) {
   const navigate = useNavigate();
 
   // [START - useContext]

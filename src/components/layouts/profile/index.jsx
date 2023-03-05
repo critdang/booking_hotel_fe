@@ -1,11 +1,11 @@
 import ProfileBody from './profile-body.component';
 import NavBar from '../navbar/navbar';
 
-export default function ResetPasswod() {
+export default function ResetPasswod({ setLoading }) {
   return (
     <>
       <NavBar />
-      <ProfileBody />
+      <ProfileBody setLoading={setLoading} />
     </>
   );
 }

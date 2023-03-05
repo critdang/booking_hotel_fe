@@ -26,6 +26,9 @@ import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import '@hassanmojab/react-modern-calendar-datepicker/lib/DatePicker.css';
 import { Calendar } from '@hassanmojab/react-modern-calendar-datepicker';
 import dayjs from 'dayjs';
+import { makeStyles } from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
 const theme = createTheme();
 
 const initialRoom = [
@@ -34,10 +37,27 @@ const initialRoom = [
     kids: 0,
   },
 ];
+const useStyles = makeStyles((theme) => ({
+  loading: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 9999,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+}));
 
 export default function SearchRoom() {
   // [START - CONFIG SEARCH MODAL]
+  const classes = useStyles();
   const [openSearch, setOpenSearch] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const theme = useTheme();
   const fullScreenSearch = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -122,7 +142,7 @@ export default function SearchRoom() {
   const navigate = useNavigate();
   let [searchParams, setSearchParams] = useSearchParams();
 
-  const submitSearch = (e) => {
+  const submitSearch = () => {
     const From = moment(selectedDayRange.from).format('MM-DD-YYYY');
 
     const To = moment(selectedDayRange.to).format('MM-DD-YYYY');
@@ -162,6 +182,13 @@ export default function SearchRoom() {
 
   return (
     <>
+      {loading && (
+        <div className={classes.loading}>
+          {' '}
+          <CircularProgress />{' '}
+        </div>
+      )}{' '}
+      {/* Show loading spinner if loading is true */}
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <main>
@@ -179,7 +206,7 @@ export default function SearchRoom() {
                   item
                   xs={12}
                   sm={12}
-                  md={4}
+                  md={3}
                   display="flex"
                   justifyContent="center"
                   alignItems="center"
@@ -873,7 +900,7 @@ export default function SearchRoom() {
                 <Grid
                   xs={12}
                   sm={12}
-                  md={2}
+                  md={3}
                   item
                   display="flex"
                   justifyContent="center"

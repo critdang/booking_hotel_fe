@@ -106,7 +106,7 @@ const styleModal = {
   p: 4,
 };
 
-export default function Body(props) {
+export default function Body({ props, setLoading }) {
   // [START - GET ROOMS AND ALTER DATA ]
   const rooms = JSON.parse(sessionStorage.getItem('rooms'));
   let totalRoomCharge = 0;
@@ -200,6 +200,7 @@ export default function Body(props) {
   );
 
   const submitOrder = (rawData) => {
+    setLoading(true);
     const searchInfo = JSON.parse(sessionStorage.getItem('searchInfo'));
     const payment = {
       cardName: rawData.cardName,
@@ -225,7 +226,9 @@ export default function Body(props) {
         if (res.data.success) {
           // potential call 2 times in deveplopment because of React.StrictMode
           toastAlertSuccess(res.data.message);
-          return setTimeout(() => navigate('/'), 3000);
+          setLoading(false);
+          navigate('/');
+          // return setTimeout(() => navigate('/'), 3000);
         }
       })
       .catch((error) => {
