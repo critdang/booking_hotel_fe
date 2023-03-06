@@ -16,12 +16,9 @@ import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { toastAlertFail, toastAlertSuccess } from '../../../utils/helperFn';
 import * as yup from 'yup';
-import axios from 'axios';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as API from '../../../constants/api';
 import { useAuth } from '../../../context/auth/auth';
 const theme = createTheme();
 

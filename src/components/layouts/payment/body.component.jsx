@@ -177,7 +177,7 @@ export default function Body({ props, setLoading }) {
         .typeError('Card Number must be a number')
         .required('Please provide your card number'),
       expiryDate: yup
-        .number()
+        .date()
         .typeError('Expiry Date must be a number')
         .required('Please provide your card date'),
       cardCVV: yup
@@ -239,6 +239,7 @@ export default function Body({ props, setLoading }) {
           ) {
             navigate('/login');
           }
+          setLoading(false);
           return toastAlertFail(error.response.data.message);
         }
       });
