@@ -46,6 +46,7 @@ import { toastAlertFail } from '../../../utils/helperFn';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import moment from 'moment';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
+import Review from './room-review';
 
 const imageSources = [
   'https://media-cdn.tripadvisor.com/media/photo-s/17/61/79/7f/pub-area.jpg',
@@ -221,10 +222,6 @@ export default function RoomBody({ setLoading }) {
     axios
       .get(`${API.GET_ROOM_BY_CATEGORY}/${categoryId}`)
       .then((res) => {
-        console.log(
-          '🚀 ~ file: room-body.component.jsx:224 ~ .then ~ res:',
-          res
-        );
         if (res.data.success) {
           setRooms(res.data.message.rooms);
         }
@@ -754,6 +751,20 @@ export default function RoomBody({ setLoading }) {
                                                 </ListItemText>
                                               </List>
                                             </Collapse>
+                                          </List>
+                                        </Container>
+                                        <Container>
+                                          <List
+                                            sx={{
+                                              width: '100%',
+                                              maxWidth: '100%',
+                                              bgcolor: 'background.paper',
+                                            }}
+                                            component="nav"
+                                          >
+                                            {/* [START] REVIEW COMPONENT */}
+                                            <Review />
+                                            {/* [END] REVIEW COMPONENT */}
                                           </List>
                                         </Container>
                                       </Grid>

@@ -29,8 +29,6 @@ import dayjs from 'dayjs';
 import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-const theme = createTheme();
-
 const initialRoom = [
   {
     adults: 1,
