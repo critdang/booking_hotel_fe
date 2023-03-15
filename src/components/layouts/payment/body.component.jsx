@@ -171,7 +171,7 @@ export default function Body({ props, setLoading }) {
   const schema = yup
     .object()
     .shape({
-      cardName: yup.string().required('Please provide your name'),
+      cardName: yup.string().required('Please provide your credit card name'),
       cardNumber: yup
         .number()
         .typeError('Card Number must be a number')
@@ -194,10 +194,6 @@ export default function Body({ props, setLoading }) {
   } = useForm({
     resolver: yupResolver(schema),
   });
-  console.log(
-    '🚀 ~ file: body.component.jsx ~ line 140 ~ Body ~ errors',
-    errors
-  );
 
   const submitOrder = (rawData) => {
     setLoading(true);
@@ -223,6 +219,7 @@ export default function Body({ props, setLoading }) {
       headers: { authorization: `Bearer ${TOKEN}` },
     })
       .then((res) => {
+        console.log('🚀 ~ file: body.component.jsx:226 ~ .then ~ res:', res);
         if (res.data.success) {
           // potential call 2 times in deveplopment because of React.StrictMode
           toastAlertSuccess(res.data.message);
@@ -232,6 +229,10 @@ export default function Body({ props, setLoading }) {
         }
       })
       .catch((error) => {
+        console.log(
+          '🚀 ~ file: body.component.jsx:236 ~ submitOrder ~ error:',
+          error
+        );
         if (error) {
           if (
             error.response.data.message ===
@@ -240,7 +241,9 @@ export default function Body({ props, setLoading }) {
             navigate('/login');
           }
           setLoading(false);
-          return toastAlertFail(error.response.data.message);
+          return toastAlertFail(
+            'There was an error. Please contact hotel staff.'
+          );
         }
       });
     // window.scrollTo(0, 0);

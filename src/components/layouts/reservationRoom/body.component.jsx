@@ -132,10 +132,6 @@ export default function Body() {
       url: `${API.GET_SEARCH}/?arrival=${arrival}&departure=${departure}&adults=${adults}&kids=${kids}`,
     })
       .then((res) => {
-        console.log(
-          '🚀 ~ file: body.component.jsx ~ line 145 ~ .then ~ res',
-          res
-        );
         if (res.data.success) {
           // potential call 2 times in deveplopment because of React.StrictMode
           setRooms(res.data.message);

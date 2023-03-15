@@ -10,7 +10,7 @@ export default function Room({ setLoading }) {
       <NavBar />
       <RoomBreadcumb />
       <SearchRoom />
-      <RoomBody setLoading={setLoading} />
+      <RoomBody />
       <Footer />
       {/* <SpeedDialCart /> */}
     </>

@@ -25,6 +25,6 @@ export const GET_CATEGORY = `${BASE_URL}/category`;
 
 export const GET_ROOM_BY_CATEGORY = `${BASE_URL}/category`;
 
-export const CREATE_ORDER = `${BASE_URL}/order`;
+export const CREATE_ORDER = `${BASE_URL}/invoice`;
 
 export const GET_SEARCH = `${BASE_URL}/room/search`;

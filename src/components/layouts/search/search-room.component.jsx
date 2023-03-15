@@ -51,6 +51,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function SearchRoom() {
+  const isXsOrSm = useMediaQuery('(max-width: 960px)'); // Set breakpoint for mobile view
   // [START - CONFIG SEARCH MODAL]
   const classes = useStyles();
   const [openSearch, setOpenSearch] = useState(false);
@@ -221,13 +222,8 @@ export default function SearchRoom() {
                     }}
                     onClick={handleClickOpenCalendar}
                   >
-                    <Grid
-                      container
-                      display="contents"
-                      alignItems="center"
-                      justifyContent="center"
-                    >
-                      <Grid item xs={3} sm={3} md={3}>
+                    <Grid container display="contents" alignItems="center">
+                      <Grid item xs={3} sm={3} md={3} mr={isXsOrSm ? 1 : 2}>
                         <Typography
                           variant="h3"
                           sx={{ pr: 2, fontWeight: 600 }}
@@ -237,7 +233,7 @@ export default function SearchRoom() {
                             : selectedDayRange.from.day}
                         </Typography>
                       </Grid>
-                      <Grid item xs={3} sm={3} md={3}>
+                      <Grid item xs={3} sm={3} md={3} mr={1}>
                         <Typography
                           variant="body1"
                           fontWeight="bold"
@@ -250,7 +246,14 @@ export default function SearchRoom() {
                         </Typography>
                       </Grid>
                       <Divider orientation="vertical" flexItem />
-                      <Grid item xs={3} sm={3} md={3} sx={{ ml: '5px' }}>
+                      <Grid
+                        item
+                        xs={3}
+                        sm={3}
+                        md={3}
+                        ml={1}
+                        mr={isXsOrSm ? 1 : 2}
+                      >
                         <Typography
                           variant="h3"
                           sx={{ pr: 2, fontWeight: 600 }}
