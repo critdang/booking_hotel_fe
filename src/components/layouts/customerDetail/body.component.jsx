@@ -25,9 +25,7 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useNavigate } from 'react-router-dom';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import { toastAlertFail, toastAlertSuccess } from '../../../utils/helperFn';
-import axios from 'axios';
-import * as API from '../../../constants/api';
+import { useEffect } from 'react';
 
 const theme = createTheme();
 const initialState = {
@@ -44,11 +42,8 @@ export default function Body() {
   const dataUser = JSON.parse(localStorage.getItem('userInfo'));
   const [userInfo, setUserInfo] = useState(dataUser);
   let [searchParams, setSearchParams] = useSearchParams();
-
   const [inputSearch, setInputSearch] = React.useState(initialState);
-  const submitSearch = (e) => {
-    setSearchParams(inputSearch);
-  };
+
   const [err, setErr] = useState(false);
   const schema = yup
     .object()
@@ -60,7 +55,24 @@ export default function Body() {
       gender: yup.string(),
     })
     .required();
+  // [START] - get selected Destination
+  const [selectedBranchHotel, setSelectedBranchHotel] = useState();
+  useEffect(() => {
+    const dataSelectedBranchHotel = sessionStorage.getItem('selectedBranch');
+    let defaultSelectedBranchHotel = null;
+    if (dataSelectedBranchHotel) {
+      try {
+        defaultSelectedBranchHotel = JSON.parse(dataSelectedBranchHotel);
+      } catch (error) {
+        console.error('Error parsing JSON from sessionStorage:', error);
+      }
+    }
+    if (defaultSelectedBranchHotel) {
+      setSelectedBranchHotel(defaultSelectedBranchHotel);
+    }
+  }, []);
 
+  // [END] - get selected Destination
   const {
     control,
     handleSubmit,
@@ -69,7 +81,7 @@ export default function Body() {
     resolver: yupResolver(schema),
   });
   const submitGuest = (data) => {
-    sessionStorage.setItem('guestInfo', JSON.stringify(data));
+    sessionStorage.setItem('customerInfo', JSON.stringify(data));
     window.scrollTo(0, 0);
     navigate('/book/reservation/payment');
   };
@@ -387,7 +399,7 @@ export default function Body() {
                         style={{ width: '100%', borderRadius: '10px' }}
                       ></img>
                       <Typography variant="h6" fontWeight="bold">
-                        Hilton Da Nang
+                        Hilton {selectedBranchHotel?.name}
                       </Typography>
                       <Typography
                         variant="body2"

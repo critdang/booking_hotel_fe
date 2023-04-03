@@ -22,6 +22,7 @@ import { AiOutlineInstagram } from 'react-icons/ai';
 import PersonIcon from '@mui/icons-material/Person';
 import { useCart } from '../../../context/cart/cart.provider';
 import { useAuth } from '../../../context/auth/auth';
+import { useEffect } from 'react';
 
 export default function HeaderHome() {
   // [START - useContext]
@@ -89,6 +90,18 @@ export default function HeaderHome() {
     window.location.reload();
   };
   const { signed } = useAuth();
+  // [START] - get selectedBranch from sessionStorage
+  const [selectedBranch, setSelectedBranch] = React.useState();
+
+  useEffect(() => {
+    const branch = JSON.parse(sessionStorage.getItem('selectedBranch'));
+    if (branch !== null) {
+      setSelectedBranch(branch);
+    } else {
+      setSelectedBranch(null);
+    }
+  }, []);
+  // [END] - get selectedBranch from sessionStorage
 
   return (
     <AppBar
@@ -161,16 +174,18 @@ export default function HeaderHome() {
                   </Button>
                 </Link>
               </MenuItem>
-              <MenuItem onClick={handleCloseNavMenu}>
-                <Link
-                  to={`/room`}
-                  style={{ textDecoration: 'none', color: 'black' }}
-                >
-                  <Button sx={{ color: 'black', textDecoration: 'none' }}>
-                    Dorm & Rooms
-                  </Button>
-                </Link>
-              </MenuItem>
+              {selectedBranch && selectedBranch !== null && (
+                <MenuItem onClick={handleCloseNavMenu}>
+                  <Link
+                    to={`/room`}
+                    style={{ textDecoration: 'none', color: 'black' }}
+                  >
+                    <Button sx={{ color: 'black', textDecoration: 'none' }}>
+                      Dorm & Rooms
+                    </Button>
+                  </Link>
+                </MenuItem>
+              )}
               <MenuItem onClick={handleCloseNavMenu}>
                 <Link
                   to="/activities"
@@ -298,45 +313,26 @@ export default function HeaderHome() {
                 Home
               </Button>
             </Link>
-            <Link to="/room" style={{ textDecoration: 'none' }}>
-              <Button
-                id="basic-button"
-                aria-controls={open ? 'basic-menu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
-                onClick={handleClick}
-                sx={{
-                  color: 'black',
-                  '&:hover': {
-                    opacity: '50%',
-                  },
-                }}
-              >
-                Dorm & Rooms
-              </Button>
-              {/* Start - Dropdown list menu */}
-
-              {/* <Menu
-              id="basic-menu"
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleClose}
-              MenuListProps={{
-                'aria-labelledby': 'basic-button',
-              }}
-            >
-              <Link
-                to={`/categories`}
-                style={{ textDecoration: 'none', color: 'black' }}
-              >
-                <MenuItem onClick={handleClose} sx={{ color: 'black' }}>
-                  All
-                </MenuItem>
+            {selectedBranch && selectedBranch !== null && (
+              <Link to="/room" style={{ textDecoration: 'none' }}>
+                <Button
+                  id="basic-button"
+                  aria-controls={open ? 'basic-menu' : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={open ? 'true' : undefined}
+                  onClick={handleClick}
+                  sx={{
+                    color: 'black',
+                    '&:hover': {
+                      opacity: '50%',
+                    },
+                  }}
+                >
+                  Dorm & Rooms
+                </Button>
               </Link>
-            </Menu> */}
+            )}
 
-              {/* END - Dropdown list menu */}
-            </Link>
             <div>
               <Link
                 to="/activities"
@@ -461,16 +457,18 @@ export default function HeaderHome() {
           {/* END - MENU on laptop */}
 
           {/* Start- Book & Social icon on laptop */}
-          <Box sx={{ flexGrow: 0 }}>
-            <Link
-              to="/room"
-              style={{ textDecoration: 'none', paddingLeft: '30px' }}
-            >
-              <Button variant="outlined" color="error">
-                Book
-              </Button>
-            </Link>
-          </Box>
+          {selectedBranch && selectedBranch !== null && (
+            <Box sx={{ flexGrow: 0 }}>
+              <Link
+                to="/room"
+                style={{ textDecoration: 'none', paddingLeft: '30px' }}
+              >
+                <Button variant="outlined" color="error">
+                  Book
+                </Button>
+              </Link>
+            </Box>
+          )}
           {/* End- Book & Social icon on laptop */}
         </Toolbar>
       </Container>

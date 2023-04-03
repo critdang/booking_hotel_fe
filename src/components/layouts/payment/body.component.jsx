@@ -165,27 +165,32 @@ export default function Body({ props, setLoading }) {
   const handleOpenRules = () => setOpenRules(true);
   const handleCloseRules = () => setOpenRules(false);
 
-  const [paymentMethod, setPaymentMethod] = useState('VISA');
+  const [paymentMethod, setPaymentMethod] = useState('cash');
 
   const [err, setErr] = useState(false);
-  const schema = yup
-    .object()
-    .shape({
-      cardName: yup.string().required('Please provide your credit card name'),
-      cardNumber: yup
-        .number()
-        .typeError('Card Number must be a number')
-        .required('Please provide your card number'),
-      expiryDate: yup
-        .date()
-        .typeError('Expiry Date must be a number')
-        .required('Please provide your card date'),
-      cardCVV: yup
-        .number()
-        .typeError('CVV must be a number')
-        .required('Please provide your card cvv'),
-    })
-    .required();
+  let schema = null;
+  if (paymentMethod === 'VISA') {
+    schema = yup
+      .object()
+      .shape({
+        cardName: yup.string().required('Please provide your credit card name'),
+        cardNumber: yup
+          .number()
+          .typeError('Card Number must be a number')
+          .required('Please provide your card number'),
+        expiryDate: yup
+          .number()
+          .typeError('Expiry Date must be a number')
+          .required('Please provide your card date'),
+        cardCVV: yup
+          .number()
+          .typeError('CVV must be a number')
+          .required('Please provide your card cvv'),
+      })
+      .required();
+  } else {
+    schema = yup.object();
+  }
 
   const {
     control,
@@ -205,11 +210,11 @@ export default function Body({ props, setLoading }) {
       cardCVV: rawData.cardCVV,
       paymentMethod: paymentMethod,
     };
-    const guestInfo = JSON.parse(sessionStorage.getItem('guestInfo'));
+    const customerInfo = JSON.parse(sessionStorage.getItem('customerInfo'));
     const data = {
       payment,
       rooms,
-      guestInfo,
+      customerInfo,
       searchInfo,
     };
     axios({
@@ -219,13 +224,15 @@ export default function Body({ props, setLoading }) {
       headers: { authorization: `Bearer ${TOKEN}` },
     })
       .then((res) => {
-        console.log('🚀 ~ file: body.component.jsx:226 ~ .then ~ res:', res);
         if (res.data.success) {
           // potential call 2 times in deveplopment because of React.StrictMode
           toastAlertSuccess(res.data.message);
-          setLoading(false);
-          navigate('/');
-          // return setTimeout(() => navigate('/'), 3000);
+          setTimeout(() => {
+            setLoading(false);
+            navigate('/');
+          }, 3000);
+          // setLoading(false);
+          // navigate('/');
         }
       })
       .catch((error) => {
@@ -246,9 +253,25 @@ export default function Body({ props, setLoading }) {
           );
         }
       });
-    // window.scrollTo(0, 0);
   };
+  // [START] - get selected Destination
+  const [selectedBranchHotel, setSelectedBranchHotel] = useState();
+  useEffect(() => {
+    const dataSelectedBranchHotel = sessionStorage.getItem('selectedBranch');
+    let defaultSelectedBranchHotel = null;
+    if (dataSelectedBranchHotel) {
+      try {
+        defaultSelectedBranchHotel = JSON.parse(dataSelectedBranchHotel);
+      } catch (error) {
+        console.error('Error parsing JSON from sessionStorage:', error);
+      }
+    }
+    if (defaultSelectedBranchHotel) {
+      setSelectedBranchHotel(defaultSelectedBranchHotel);
+    }
+  }, []);
 
+  // [END] - get selected Destination
   return (
     <form onSubmit={handleSubmit(submitOrder)}>
       <>
@@ -694,12 +717,22 @@ export default function Body({ props, setLoading }) {
                         Payment
                       </Typography>
                     </Box>
+                    {/* START - PAYMENTMETHOD VISA */}
+
                     <FormControl>
                       <RadioGroup
                         aria-labelledby="demo-radio-buttons-group-label"
-                        defaultValue="VISA"
+                        defaultValue="Cash"
                         name="radio-buttons-group"
                       >
+                        <FormControlLabel
+                          value="Cash"
+                          control={<Radio />}
+                          label="Cash"
+                          onClick={() => {
+                            setPaymentMethod('Cash');
+                          }}
+                        />
                         <FormControlLabel
                           value="VISA"
                           control={<Radio />}
@@ -708,7 +741,6 @@ export default function Body({ props, setLoading }) {
                             setPaymentMethod('VISA');
                           }}
                         />
-                        {/* START - PAYMENTMETHOD VISA */}
                         {paymentMethod === 'VISA' && (
                           <Grid container>
                             <Grid
@@ -842,18 +874,17 @@ export default function Body({ props, setLoading }) {
                             </Grid>
                           </Grid>
                         )}
-                        {/* END - PAYMENTMETHOD VISA */}
-
                         <FormControlLabel
-                          value="stripe"
+                          value="PayPal"
                           control={<Radio />}
-                          label="Stripe"
+                          label="PayPal"
                           onClick={() => {
-                            setPaymentMethod('Stripe');
+                            setPaymentMethod('PayPal');
                           }}
                         />
                       </RadioGroup>
                     </FormControl>
+                    {/* END - PAYMENTMETHOD VISA */}
                     <Divider sx={{ my: 2 }} />
                     <Box sx={{ width: '80%' }}>
                       <Typography
@@ -1092,7 +1123,7 @@ export default function Body({ props, setLoading }) {
                       />
                       <CardContent>
                         <Typography variant="h6" fontWeight="bold">
-                          Hilton Da Nang
+                          Hilton {selectedBranchHotel?.name}
                         </Typography>
                         <Typography
                           variant="body2"

@@ -6,12 +6,8 @@ import {
   Typography,
   Grid,
   Button,
-  TextField,
-  FormControl,
-  FormLabel,
   Divider,
   CardActions,
-  Modal,
   List,
   ListItem,
   IconButton,
@@ -23,15 +19,12 @@ import {
   StepButton,
   DialogContent,
   DialogContentText,
-  DialogActions,
   Dialog,
   DialogTitle,
   useMediaQuery,
   ListItemText,
-  ListSubheader,
   ListItemButton,
   Collapse,
-  ListItemIcon,
 } from '@mui/material';
 import * as React from 'react';
 import moment from 'moment';
@@ -133,7 +126,6 @@ export default function Body() {
     })
       .then((res) => {
         if (res.data.success) {
-          // potential call 2 times in deveplopment because of React.StrictMode
           setRooms(res.data.message);
         }
       })
@@ -148,6 +140,7 @@ export default function Body() {
       });
   }, []);
   const [activeStep, setActiveStep] = React.useState(0);
+
   const [completed, setCompleted] = React.useState({});
   // [START - CONFIG STEPS FOR ROOMS]
   const totalSteps = () => {
@@ -177,10 +170,6 @@ export default function Body() {
           rooms.findIndex((step, i) => !(i in completed))
         : activeStep + 1;
     if (isLastStep()) {
-      console.log(
-        '🚀 ~ file: body.component.jsx ~ line aaaaaaaaaa ~ handleNext ~ pickedRoom',
-        pickedRoom
-      );
       sessionStorage.setItem('rooms', JSON.stringify(pickedRoom));
 
       setTimeout(() => navigate('/book/reservation'));
@@ -228,6 +217,24 @@ export default function Body() {
     toastAlertSuccess('Room has been picked');
   };
 
+  // [START] - get selected Destination
+  const [selectedBranchHotel, setSelectedBranchHotel] = useState();
+  useEffect(() => {
+    const dataSelectedBranchHotel = sessionStorage.getItem('selectedBranch');
+    let defaultSelectedBranchHotel = null;
+    if (dataSelectedBranchHotel) {
+      try {
+        defaultSelectedBranchHotel = JSON.parse(dataSelectedBranchHotel);
+      } catch (error) {
+        console.error('Error parsing JSON from sessionStorage:', error);
+      }
+    }
+    if (defaultSelectedBranchHotel) {
+      setSelectedBranchHotel(defaultSelectedBranchHotel);
+    }
+  }, []);
+
+  // [END] - get selected Destination
   return (
     <>
       <ThemeProvider theme={theme}>
@@ -349,7 +356,9 @@ export default function Body() {
                     </Grid>
                   </Grid>
                   <Typography variant="body1" sx={{ m: 2 }}>
-                    We found {rooms ? rooms.length : 0} for you.
+                    We found{' '}
+                    {rooms && rooms[activeStep] ? rooms[activeStep].length : 0}{' '}
+                    for you.
                   </Typography>
                   <Divider sx={{ mb: 2 }} />
                   <Grid container spacing={4}>
@@ -888,19 +897,19 @@ export default function Body() {
                       style={{ width: '100%', borderRadius: '10px' }}
                     ></img>
                     <Typography variant="h6" fontWeight="bold">
-                      Hilton Da Nang
+                      Hilton {selectedBranchHotel?.name}
                     </Typography>
                     <Typography
                       variant="body2"
                       sx={{ textDecoration: 'underline' }}
                     >
-                      50 Bach Dang St, Hai Chau District 550000 Da Nang, Vietnam
+                      {selectedBranchHotel?.address}
                     </Typography>
                   </Box>
                   <Card sx={{ mt: 2 }}>
                     <CardContent>
                       <Typography variant="h6" fontWeight="bold">
-                        Hilton Da Nang
+                        Hilton {selectedBranchHotel?.name}
                       </Typography>
                       {pickedRoom &&
                         pickedRoom.map((room, index) => (

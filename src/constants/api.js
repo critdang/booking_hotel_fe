@@ -1,5 +1,5 @@
-export const BASE_URL = process.env.REACT_APP_BASE_URL;
-// export const BASE_URL = 'http://localhost:8080';
+// export const BASE_URL = process.env.REACT_APP_BASE_URL;
+export const BASE_URL ='http://localhost:8080';
 
 
 export const BASE_PORT = "8080";
@@ -28,3 +28,5 @@ export const GET_ROOM_BY_CATEGORY = `${BASE_URL}/category`;
 export const CREATE_ORDER = `${BASE_URL}/invoice`;
 
 export const GET_SEARCH = `${BASE_URL}/room/search`;
+
+export const GET_BRANCH = `${BASE_URL}/branch`;

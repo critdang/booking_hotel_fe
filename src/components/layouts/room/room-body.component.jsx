@@ -11,7 +11,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { CircularProgress } from '@material-ui/core';
-import { createTheme, ThemeProvider, useTheme } from '@mui/material/styles';
+import { ThemeProvider, useTheme } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
@@ -84,33 +84,7 @@ const iconAmenities = {
   'Pet not allowed':
     'https://www.hilton.com/modules/assets/svgs/amenities/petsNotAllowed.svg',
 };
-const styleModal = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 1200,
-  bgcolor: 'white',
-  borderRadius: '25px',
-  boxShadow: 24,
-  p: 4,
-};
 
-function RoomDescription(data) {
-  return data.map((des) => {
-    <Typography variant="body2" color="text.secondary">
-      {des}
-    </Typography>;
-  });
-}
-const raw = `Top premium floors, exclusive Executive Lounge access, ocean and Han River views \n Located through 25th - 27th floor, this executive room offers spectacular ocean and river views.\n Comfortably appointed with the Vietnamese-inspired décor, the guest room features a king-sized bed.`;
-const descriptions = raw.split('\n');
-const initialState = {
-  From: moment(new Date()).format('MM/DD/YYYY'),
-  To: moment(new Date()).add(1, 'days').format('MM/DD/YYYY'),
-  room: '1 Room',
-  numberOfGuests: '1 Adult',
-};
 const useStyles = makeStyles((theme) => ({
   loading: {
     width: '100%',
@@ -134,7 +108,6 @@ export default function RoomBody() {
   const [value, setValue] = React.useState();
   const [loading, setLoading] = useState(true);
   let [searchParams, setSearchParams] = useSearchParams();
-
   // get all categories
   useEffect(() => {
     axios
@@ -174,6 +147,24 @@ export default function RoomBody() {
         );
       });
   }, []);
+  // [START] - get selected Destination
+  const [selectedBranchHotel, setSelectedBranchHotel] = useState();
+  useEffect(() => {
+    const dataSelectedBranchHotel = sessionStorage.getItem('selectedBranch');
+    let defaultSelectedBranchHotel = null;
+    if (dataSelectedBranchHotel) {
+      try {
+        defaultSelectedBranchHotel = JSON.parse(dataSelectedBranchHotel);
+      } catch (error) {
+        console.error('Error parsing JSON from sessionStorage:', error);
+      }
+    }
+    if (defaultSelectedBranchHotel) {
+      setSelectedBranchHotel(defaultSelectedBranchHotel);
+    }
+  }, []);
+
+  // [END] - get selected Destination
 
   // config default
   const [open, setOpen] = React.useState(false);
@@ -195,11 +186,7 @@ export default function RoomBody() {
   const handleClose = () => {
     setOpen(false);
   };
-  const [openModal, setOpenModal] = React.useState(false);
 
-  const handleOpenModal = (id) => {
-    setOpenModal(true);
-  };
   // End config default
 
   const handleChange = (event, newValue) => {
@@ -267,13 +254,13 @@ export default function RoomBody() {
               {/* START - HEADER */}
               <Container maxWidth="xl">
                 <Typography
-                  component="h1"
-                  variant="h2"
+                  component="h2"
+                  variant="h3"
                   align="center"
                   color="text.primary"
                   gutterBottom
                 >
-                  Rooms and suites
+                  Rooms and suites at {selectedBranchHotel?.name}
                 </Typography>
               </Container>
               {/* END - HEADER */}
