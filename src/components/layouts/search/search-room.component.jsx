@@ -213,7 +213,7 @@ export default function SearchRoom() {
   // [START - CONFIG SEARCH ROOM]
   const [rooms, setRooms] = useState(initialRoom);
   console.log(
-    '🚀 ~ file: search-room.component.jsx:216 ~ SearchRoom ~ rooms:',
+    '🚀 ~ file: search-room.component.jsx:215 ~ SearchRoom ~ rooms:',
     rooms
   );
 
@@ -332,6 +332,7 @@ export default function SearchRoom() {
         }
       }
     });
+
     const adults = rawAdults.join(',');
     const kids = rawKids.join(',');
 

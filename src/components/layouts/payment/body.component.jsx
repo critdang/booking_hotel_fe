@@ -217,6 +217,10 @@ export default function Body({ props, setLoading }) {
       customerInfo,
       searchInfo,
     };
+    console.log(
+      '🚀 ~ file: body.component.jsx:215 ~ submitOrder ~ data:',
+      data
+    );
     axios({
       method: 'POST',
       url: API.CREATE_ORDER,

@@ -65,11 +65,11 @@ function App() {
               <Route path="/login" element={<Login setLoading={setLoading}/>} />
               <Route path="/signup" element={<Signup setLoading={setLoading}/>} />
               {signed && <Route path="/profile" element={<Profile setLoading={setLoading}/>} />}
-              {/* Start - Create Order */}
+              {/* Start - Create Invoice */}
               <Route path="/book/reservation/rooms/" element={<ReservationRoom setLoading={setLoading}/>} />
               <Route path="/book/reservation" element={<CustomerDetail setLoading={setLoading}/>} />
               <Route path="/book/reservation/payment" element={<Payment setLoading={setLoading}/>} />
-              {/* End - Create Order */}
+              {/* End - Create Invoice */}
             </Routes>
           </Router>
     </CartProvider>

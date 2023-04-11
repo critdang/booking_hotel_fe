@@ -4,7 +4,7 @@ import SpeedDialCart from '../speedDial/speed-dial-cart.component';
 import RoomBody from './room-body.component';
 import RoomBreadcumb from './room-breadcumb.component';
 import SearchRoom from '../search/search-room.component';
-export default function Room({ setLoading }) {
+export default function Room() {
   return (
     <>
       <NavBar />

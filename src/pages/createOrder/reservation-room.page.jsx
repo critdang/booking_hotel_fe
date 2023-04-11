@@ -1,4 +1,4 @@
 import ReservationRoom from '../../components/layouts/reservationRoom';
-export default function RequestResetPage() {
-  return <ReservationRoom />;
+export default function RequestResetPage({ setLoading }) {
+  return <ReservationRoom setLoading={setLoading} />;
 }

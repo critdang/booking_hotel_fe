@@ -30,7 +30,7 @@ const Review = () => {
     setImage(event.target.files[0]);
   };
   useEffect(() => {
-    const reviewsRef = db.ref('reviews');
+    const reviewsRef = db.ref('Post');
     reviewsRef.on('value', (snapshot) => {
       const reviewsData = [];
 
@@ -38,6 +38,10 @@ const Review = () => {
         const review = childSnapshot.val();
         reviewsData.push(review);
       });
+      console.log(
+        '🚀 ~ file: room-review.jsx:45 ~ reviewsRef.on ~ reviewsData:',
+        reviewsData
+      );
 
       setReviews(reviewsData);
       setLoading(false);
@@ -50,7 +54,7 @@ const Review = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const db = getDatabase();
-    const reviewsRef = ref(db, 'reviews');
+    const reviewsRef = ref(db, 'post');
     const newReviewRef = push(reviewsRef);
 
     set(newReviewRef, {
@@ -94,7 +98,7 @@ const Review = () => {
                   </Typography>
                   <Typography variant="body2">{review.content}</Typography>
                   <GridList cellHeight={160} cols={3}>
-                    {review.images.map((image) => (
+                    {review?.images.map((image) => (
                       <GridListTile key={image}>
                         <img src={image} alt={image} />
                       </GridListTile>

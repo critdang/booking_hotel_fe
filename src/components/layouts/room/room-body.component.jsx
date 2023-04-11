@@ -113,11 +113,14 @@ export default function RoomBody() {
     axios
       .get(API.GET_CATEGORY)
       .then((res) => {
-        setCategory(res.data.message);
-        const firstItemCate =
-          res.data.message[Object.keys(res.data.message)[0]].id;
-        setCategoryId(firstItemCate);
-        setValue(firstItemCate);
+        if (res.data.success) {
+          setCategory(res.data.message);
+          const firstItemCate =
+            res.data.message[Object.keys(res.data.message)[0]].id;
+          setCategoryId(firstItemCate);
+          setValue(firstItemCate);
+          setLoading(false);
+        }
       })
       .catch((error) => {
         if (error) {
