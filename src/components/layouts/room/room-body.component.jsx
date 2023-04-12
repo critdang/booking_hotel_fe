@@ -171,6 +171,7 @@ export default function RoomBody() {
 
   // config default
   const [open, setOpen] = React.useState(false);
+  const [roomName, setRoomName] = React.useState();
   const [openAmenitiesModal, setOpenAmenitiesModal] = React.useState(false);
   const [openDesModal, setOpenDesModal] = React.useState(false);
   const handleDesModal = () => {
@@ -182,7 +183,8 @@ export default function RoomBody() {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
-  const handleClickOpen = () => {
+  const handleClickOpen = (roomName) => {
+    setRoomName(roomName);
     setOpen(true);
   };
 
@@ -372,7 +374,7 @@ export default function RoomBody() {
                                   variant="outlined"
                                   size="small"
                                   sx={{ width: 200 }}
-                                  onClick={handleClickOpen}
+                                  onClick={() => handleClickOpen(room.name)}
                                 >
                                   View Details
                                 </Button>
@@ -803,7 +805,7 @@ export default function RoomBody() {
                                                 component="nav"
                                               >
                                                 {/* [START] REVIEW COMPONENT */}
-                                                <Review />
+                                                <Review roomName={roomName} />
                                                 {/* [END] REVIEW COMPONENT */}
                                               </List>
                                             </Container>

@@ -48,9 +48,18 @@ export default function Body() {
   const schema = yup
     .object()
     .shape({
-      fullName: yup.string().required('Full name is a required field'),
+      fullName: yup
+        .string()
+        .matches(/^[a-zA-Z\s]+$/, 'Full name must only contain letters')
+        .required('Full name is a required field'),
       email: yup.string().required('Email is a required field').email(),
-      phone: yup.number().required('Phone is a required field'),
+      phone: yup
+        .string()
+        .matches(
+          /^\+[0-9]{10,12}$/,
+          'Phone number must start with a "+" symbol and contain only numbers'
+        )
+        .required('Phone is a required field'),
       address: yup.string().required('Address is a required field'),
       gender: yup.string(),
     })
